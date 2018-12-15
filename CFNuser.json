@@ -43,19 +43,19 @@
         "Users" : [ { "Ref" : "CFNUser" } ]
       }
     },
-
-    "CFNAdmins" : {
-      "Type" : "AWS::IAM::UserToGroupAddition",
-      "Properties" : {
-        "GroupName": { "Ref" : "CFNAdminGroup" },
-        "Users" : [ { "Ref" : "CFNUser" } ]
-      }
-    },
     
     "EC2Admins" : {
       "Type" : "AWS::IAM::UserToGroupAddition",
       "Properties" : {
         "GroupName": { "Ref" : "EC2AdminGroup" },
+        "Users" : [ { "Ref" : "CFNUser" } ]
+      }
+    },
+
+    "CFNAdmins" : {
+      "Type" : "AWS::IAM::UserToGroupAddition",
+      "Properties" : {
+        "GroupName": { "Ref" : "CFNAdminGroup" },
         "Users" : [ { "Ref" : "CFNUser" } ]
       }
     },
