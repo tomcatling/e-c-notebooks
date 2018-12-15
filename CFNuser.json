@@ -55,7 +55,7 @@
     "EC2Admins" : {
       "Type" : "AWS::IAM::UserToGroupAddition",
       "Properties" : {
-        "GroupName": { "Ref" : "CFNAdminGroup" },
+        "GroupName": { "Ref" : "EC2AdminGroup" },
         "Users" : [ { "Ref" : "CFNUser" } ]
       }
     },
