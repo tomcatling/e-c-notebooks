@@ -31,6 +31,10 @@
     "CFNAdminGroup" : {
       "Type" : "AWS::IAM::Group"
     },
+    
+    "EC2AdminGroup" : {
+      "Type" : "AWS::IAM::Group"
+    },
 
     "Users" : {
       "Type" : "AWS::IAM::UserToGroupAddition",
@@ -40,7 +44,15 @@
       }
     },
 
-    "Admins" : {
+    "CFNAdmins" : {
+      "Type" : "AWS::IAM::UserToGroupAddition",
+      "Properties" : {
+        "GroupName": { "Ref" : "CFNAdminGroup" },
+        "Users" : [ { "Ref" : "CFNUser" } ]
+      }
+    },
+    
+    "EC2Admins" : {
       "Type" : "AWS::IAM::UserToGroupAddition",
       "Properties" : {
         "GroupName": { "Ref" : "CFNAdminGroup" },
@@ -79,6 +91,23 @@
           }]
         },
         "Groups" : [{ "Ref" : "CFNAdminGroup" }]
+      }
+    },
+    "EC2AdminPolicies" : {
+      "Type" : "AWS::IAM::Policy",
+      "Properties" : {
+        "PolicyName" : "EC2Admins",
+        "PolicyDocument" : {
+          "Statement": [{
+            "Effect"   : "Allow",
+            "Action"   : [
+              "ec2:*",
+              "ssm:*"
+            ],
+            "Resource" : "*"
+          }]
+        },
+        "Groups" : [{ "Ref" : "EC2AdminGroup" }]
       }
     },
 
