@@ -39,9 +39,14 @@ Resources:
         Fn::Base64: !Sub |
              #!/bin/bash -ex
              pip install jupyterlab;
-             echo "c.NotebookApp.password = 'sha1:05513094bc5a:53d1c0867023c4d6bf4ba1546adc1cfe12778720'" >> /home/ubuntu/.jconfig.py;
+             echo "c.NotebookApp.password = 'sha1:05513094bc5a:53d1c0867023c4d6bf4ba1546adc1cfe12778720'" > /home/ubuntu/.jconfig.py;
              echo "c.NotebookApp.password_required = True" >> /home/ubuntu/.jconfig.py;
-             jupyter-lab --no-browser --ip='0.0.0.0' --allow-root --config /home/ubuntu/.jconfig.py;
+             echo "c.NotebookApp.allow_origin = '*'" >> /home/ubuntu/.jconfig.py;
+             echo "c.NotebookApp.open_browser = False" >> /home/ubuntu/.jconfig.py;
+             echo "c.NotebookApp.port = 8888" >> /home/ubuntu/.jconfig.py;
+             echo "c.NotebookApp.notebook_dir = '/home/ubuntu/'" >> /home/ubuntu/.jconfig.py;
+             echo "c.NotebookApp.ip = '0.0.0.0'" >> /home/ubuntu/.jconfig.py;
+             su ubuntu -c "jupyter-lab --config /home/ubuntu/.jconfig.py;"
   InstanceIpAssociation:
     Type: AWS::EC2::EIPAssociation
     Properties:
