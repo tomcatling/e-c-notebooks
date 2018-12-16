@@ -46,13 +46,14 @@ Resources:
              usermod -a -G docker ec2-user
              service docker start &
              yum install git -y
+             curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+             chmod +x /usr/local/bin/docker-compose
+             su ec2-user
              HOME='/home/ec2-user'; export HOME
              git config --global credential.helper '!aws codecommit credential-helper $@'
              git config --global credential.UseHttpPath true
              cd /home/ec2-user/
              git clone ${RepositoryAddress}
-             curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-             chmod +x /usr/local/bin/docker-compose
   InstanceIpAssociation:
     Type: AWS::EC2::EIPAssociation
     Properties:
