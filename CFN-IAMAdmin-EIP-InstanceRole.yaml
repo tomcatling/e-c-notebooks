@@ -1,0 +1,113 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  This template creates:
+  - CFNUserGroup and CFNAdminGroup IAM groups. Note that 
+  CFNAdminGroup has full admin powers! 
+  - CFNUser IAM user associated with both of these groups
+  - a policy, role and associated instance profile which allow an 
+  EC2 instances to access S3 buckets.
+  - a new ElasticIp (EIP).
+  Note that you will need to specify the CAPABILITY_IAM flag when you 
+  create the stack to allow this template to execute.  
+Resources:
+  InstanceEIP:
+    Type: AWS::EC2::EIP
+  CFNUser:
+    Type: 'AWS::IAM::User'
+  CFNUserGroup:
+    Type: 'AWS::IAM::Group'
+  CFNAdminGroup:
+    Type: 'AWS::IAM::Group'
+  Users:
+    Type: 'AWS::IAM::UserToGroupAddition'
+    Properties:
+      GroupName: !Ref CFNUserGroup
+      Users:
+        - !Ref CFNUser
+  CFNAdmins:
+    Type: 'AWS::IAM::UserToGroupAddition'
+    Properties:
+      GroupName: !Ref CFNAdminGroup
+      Users:
+        - !Ref CFNUser
+  CFNUserPolicies:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: CFNUsers
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cloudformation:Describe*'
+              - 'cloudformation:List*'
+              - 'cloudformation:Get*'
+            Resource: '*'
+      Groups:
+        - !Ref CFNUserGroup
+  CFNAdminPolicies:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: CFNAdmins
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: '*'
+            Resource: '*'
+      Groups:
+        - !Ref CFNAdminGroup
+  CFNKeys:
+    Type: 'AWS::IAM::AccessKey'
+    Properties:
+      UserName: !Ref CFNUser
+  ListS3BucketsInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: /
+      Roles:
+        - !Ref ListS3BucketsRole
+  ListS3BucketsPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: ListS3BucketsPolicy
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:List*'
+            Resource: '*'
+      Roles:
+        - !Ref ListS3BucketsRole
+  ListS3BucketsRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+Outputs:
+  InstanceRole:
+    Value: !Ref ListS3BucketsInstanceProfile
+    Export:
+      Name: "InstanceProfile::S3Access"
+  InstanceEIPAllocationId:
+    Value: !GetAtt InstanceEIP.AllocationId
+    Export:
+      Name: "InstanceEIP::AllocationId"
+  InstanceEIPAddress:
+    Value: !Ref InstanceEIP
+    Export:
+      Name: "InstanceEIP::Address"
+  AccessKey:
+    Value: !Ref CFNKeys
+    Description: AWSAccessKeyId of new user
+  SecretKey:
+    Value: !GetAtt 
+      - CFNKeys
+      - SecretAccessKey
+    Description: AWSSecretKey of new user

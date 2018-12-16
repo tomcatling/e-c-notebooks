@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Metadata:
   License: Apache-2.0
-Description: 'AWS CloudFormation Sample Template EC2InstanceWithSecurityGroupSample:
-  Create an Amazon EC2 instance running the Amazon Linux AMI. The AMI is chosen based
-  on the region in which the stack is run. This example creates an EC2 security group
-  for the instance to give you SSH access. **WARNING** This template creates an Amazon
-  EC2 instance. You will be billed for the AWS resources used if you create a stack
-  from this template.'
+Description: >-
+  This template creates creates an EC2 instance running an Ubuntu Deep Learning Base
+  AMI attached to the EIP referenced by 'InstanceEIP::Address' with the profile 
+  'InstanceProfile::S3Access' (both of these created in a previous stack).  
+  Ports 22,8888 and 443 are open to connections from <ip range>.
+  On startup, the image will install jupyterlab and run a server.
 Parameters:
   KeyName:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
@@ -16,15 +16,7 @@ Parameters:
     Description: WebServer EC2 instance type
     Type: String
     Default: t2.micro
-    AllowedValues: [t2.nano, t2.micro, t2.small, t2.medium, t2.large, t2.xlarge, t2.2xlarge,
-      t3.nano, t3.micro, t3.small, t3.medium, t3.large, t3.xlarge, t3.2xlarge,
-      m4.large, m4.xlarge, m4.2xlarge, m4.4xlarge, m4.10xlarge,
-      m5.large, m5.xlarge, m5.2xlarge, m5.4xlarge,
-      c5.large, c5.xlarge, c5.2xlarge, c5.4xlarge, c5.9xlarge,
-      g3.8xlarge,
-      r5.large, r5.xlarge, r5.2xlarge, r5.4xlarge, r3.12xlarge,
-      i3.xlarge, i3.2xlarge, i3.4xlarge, i3.8xlarge,
-      d2.xlarge, d2.2xlarge, d2.4xlarge, d2.8xlarge]
+    AllowedValues: [t2.nano, t2.micro, t2.small, t2.medium, t2.large, t2.xlarge, t2.2xlarge, t3.nano, t3.micro, t3.small, t3.medium, t3.large, t3.xlarge, t3.2xlarge]
     ConstraintDescription: must be a valid EC2 instance type.
   SSHLocation:
     Description: The IP address range that can be used to SSH to the EC2 instances
@@ -42,6 +34,7 @@ Resources:
       SecurityGroups: [!Ref 'InstanceSecurityGroup', !Ref 'JupyterSecurityGroup']
       KeyName: !Ref 'KeyName'
       ImageId: ami-06bdd60600636ebdf
+      IamInstanceProfile: !ImportValue 'InstanceProfile::S3Access'
       UserData:
         Fn::Base64: !Sub |
              #!/bin/bash -ex
@@ -49,6 +42,11 @@ Resources:
              echo "c.NotebookApp.password = 'sha1:05513094bc5a:53d1c0867023c4d6bf4ba1546adc1cfe12778720'" >> /home/ubuntu/.jconfig.py;
              echo "c.NotebookApp.password_required = True" >> /home/ubuntu/.jconfig.py;
              jupyter-lab --no-browser --ip='0.0.0.0' --allow-root --config /home/ubuntu/.jconfig.py;
+  InstanceIpAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      EIP: !ImportValue 'InstanceEIP::Address'
+      InstanceId: !Ref 'EC2Instance'
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
