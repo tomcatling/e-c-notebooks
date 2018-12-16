@@ -1,5 +1,26 @@
 # --Work In Progress--
 
+Tell Git to use AWS CodeCommit credential-helper:
+
+`git config --global credential.helper '!aws codecommit --profile DataScienceStack credential-helper $@'`
+`git config --global credential.UseHttpPath true`
+
+Create a repository to use for this project:
+
+`aws codecommit --profile DataScienceStack create-repository --repository-name DataScienceStack`
+
+Make a note of the value returned in the `cloneUrlHttp` field.
+
+Push this repository to the CloudCommit repo using:
+
+`git push <cloneUrlHttp> --all`
+
+Stand up the EC2 stack using:
+
+`aws cloudformation --profile DataScienceStack create-stack --stack-name EC2Test --template-body file://CFN-EC2-JupyterLab.yaml --parameters file://CFNParams-EC2-JupyterLab.json`
+
+git push https://git-codecommit.us-east-2.amazonaws.com/v1/repos/MyDemoRepo --all
+
 This repo contains two cloudformation stacks which:
 
 * set up an IAM admin user, an elastic ip, and an instance profile with restricted permissions
