@@ -31,7 +31,7 @@ Parameters:
     Type: String
     MinLength: 9
     MaxLength: 18
-    Default: 0.0.0.0/0
+    Default: 89.36.64.36/32
     AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
 Resources:
@@ -39,9 +39,17 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref 'InstanceType'
-      SecurityGroups: [!Ref 'InstanceSecurityGroup']
+      SecurityGroups: [!Ref 'InstanceSecurityGroup', !Ref 'JupyterSecurityGroup']
       KeyName: !Ref 'KeyName'
-      ImageId: ami-0c9ae74667b049f59
+      ImageId: ami-06bdd60600636ebdf
+      UserData:
+        Fn::Base64: !Sub |
+             #!/bin/bash -ex
+             pip install jupyterlab &&
+             jupyter notebook --generate-config -y &&
+             echo "c.NotebookApp.password = 'sha1:05513094bc5a:53d1c0867023c4d6bf4ba1546adc1cfe12778720'" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py &&
+             echo "c.NotebookApp.password_required = True" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py &&
+             jupyter-lab --no-browser --ip='0.0.0.0' &
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -50,6 +58,19 @@ Resources:
       - IpProtocol: tcp
         FromPort: 22
         ToPort: 22
+        CidrIp: !Ref 'SSHLocation'
+  JupyterSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP access to default jupyter port
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 8888
+        ToPort: 8888
+        CidrIp: !Ref 'SSHLocation'
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
         CidrIp: !Ref 'SSHLocation'
 Outputs:
   InstanceId:
