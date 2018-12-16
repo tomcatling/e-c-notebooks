@@ -6,5 +6,15 @@
   {
     "ParameterKey": "InstanceType",
     "ParameterValue": "t2.micro"
+  },
+  {
+  	"ParameterKey": "RepositoryAddress",
+  	"ParameterValue": "https://git-codecommit.us-east-2.amazonaws.com/v1/repos/DataScienceStack"
+  },
+  {
+  	"ParameterKey": "SSHLocation",
+  	"ParameterValue": "89.36.64.36/32"
   }
 ]
+
+

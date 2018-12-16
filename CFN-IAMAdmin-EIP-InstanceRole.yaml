@@ -74,6 +74,7 @@ Resources:
           - Effect: Allow
             Action:
               - 's3:List*'
+              - 'codecommit:*'
             Resource: '*'
       Roles:
         - !Ref ListS3BucketsRole
