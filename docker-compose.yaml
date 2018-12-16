@@ -1,8 +1,12 @@
 jupyterlab:
-  build: .
+  image: jupyter/minimal-notebook
   ports:
     - "8888:8888"
   volumes:
     - ./notebooks:/home/jovyan/notebooks
     - $HOME/.aws/:/home/jovyan/.aws/
+  environment:
+    - JUPYTER_ENABLE_LAB=yes
+    - GRANT_SUDO=yes
+  user: root
   entrypoint: jupyter lab --ip='0.0.0.0' --port=8888 --no-browser --notebook-dir=/home/jovyan/notebooks --allow-root
