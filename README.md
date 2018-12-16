@@ -1,3 +1,11 @@
+# --Work In Progress--
+
+This repo contains three cloudformation stacks which:
+
+* set up an IAM admin user, an elastic ip, and an instance profile with restricted permissions
+* stand up an EC2 instance at this ip associated with the instance profile and serving jupyterlab
+* stand up an EC2 instance which will run a notebook via papermill, push the output to S3 and delete it's own stack. The stack  has a timeout so that it will shutdown even if the job fails.
+
 ## AWS CloudFormation Templates
 
 A collection of templates for setting up and managing a few things.
