@@ -45,11 +45,10 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
              #!/bin/bash -ex
-             pip install jupyterlab &&
-             jupyter notebook --generate-config -y &&
-             echo "c.NotebookApp.password = 'sha1:05513094bc5a:53d1c0867023c4d6bf4ba1546adc1cfe12778720'" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py &&
-             echo "c.NotebookApp.password_required = True" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py &&
-             jupyter-lab --no-browser --ip='0.0.0.0' &
+             pip install jupyterlab;
+             echo "c.NotebookApp.password = 'sha1:05513094bc5a:53d1c0867023c4d6bf4ba1546adc1cfe12778720'" >> /home/ubuntu/.jconfig.py;
+             echo "c.NotebookApp.password_required = True" >> /home/ubuntu/.jconfig.py;
+             jupyter-lab --no-browser --ip='0.0.0.0' --allow-root --config /home/ubuntu/.jconfig.py;
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
