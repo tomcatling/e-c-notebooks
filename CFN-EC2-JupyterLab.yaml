@@ -54,6 +54,8 @@ Resources:
              git config --global credential.UseHttpPath true
              cd /home/ec2-user/
              git clone ${RepositoryAddress}
+             cd /home/ec2-user/DataScienceStack
+             docker-compose up
   InstanceIpAssociation:
     Type: AWS::EC2::EIPAssociation
     Properties:
