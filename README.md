@@ -1,19 +1,38 @@
 # --Work In Progress--
 
-Tell Git to use AWS CodeCommit credential-helper:
+This repository is an example of setting up a Docker stack with JupyterLab for local development, with some helpful CloudFormation templates which allow you to execute a notebook *in the same enviroment* on an EC2 instance. There are many advantages to working in this way:
+
+* local development is free
+* EC2 instances are very scalable
+* your environment is consistent
+
+## Setup
+
+Some manual work is required to set up this workflow.
+
+* Assuming you are starting from scratch in AWS, apply the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template using the console. This creates some an IAM user, an Elastic ip, and an instance role we will reference in the other stack.
+
+**The Elastic ip costs money**. *Even on the free tier, you pay for this when it is not associated with an instance (about $90/yr).*
+
+* Once your IAM user has been created, use their access keys to set up a profile in awscli called 'DataScienceStack'
+
+`aws configure --profile DataScienceStack`
+
+* tell Git to use AWS CodeCommit credential-helper:
 
 `git config --global credential.helper '!aws codecommit --profile DataScienceStack credential-helper $@'`
 `git config --global credential.UseHttpPath true`
 
-Create a repository to use for this project:
+* Create a CodeCommit respository to hold your work, making a note of the value returned in the `cloneUrlHttp` field
 
 `aws codecommit --profile DataScienceStack create-repository --repository-name DataScienceStack`
 
-Make a note of the value returned in the `cloneUrlHttp` field.
-
-Push this repository to the CloudCommit repo using:
+* Push this repository to the CodeCommit repo:
 
 `git push <cloneUrlHttp> --all`
+
+
+## Normal Use
 
 Stand up the EC2 stack using:
 
