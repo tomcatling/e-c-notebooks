@@ -15,7 +15,7 @@ Some manual work is required to set up this workflow.
 
 **The Elastic ip costs money when not attached to an instance**
 
-* Once your IAM user has been created, use their access keys to set up a profile in awscli called 'DataScienceStack'
+* Once your IAM user has been created, use their access keys to set up a profile in `awscli` called 'DataScienceStack'
 
 ```bash
 aws configure --profile DataScienceStack
@@ -32,11 +32,15 @@ git config --global credential.UseHttpPath true
 
 * Create a CodeCommit respository to hold your work, making a note of the value returned in the `cloneUrlHttp` field
 
-`aws codecommit --profile DataScienceStack create-repository --repository-name DataScienceStack`
+```bash
+aws codecommit --profile DataScienceStack create-repository --repository-name DataScienceStack
+```
 
 * Push this repository to the CodeCommit repo:
 
-`git push <cloneUrlHttp> --all`
+```bash
+git push <cloneUrlHttp> --all
+```
 
 
 ## Normal Use
