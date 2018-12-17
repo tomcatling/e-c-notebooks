@@ -9,19 +9,19 @@ This repository is an example of setting up a Docker stack with JupyterLab for l
 
 ## Setup
 
-Some manual work is required to set up this workflow.
+Some manual work is required to set up this workflow. The instructions here assume you are starting from scratch in AWS with a root account that currenty has no resources. 
 
-* Assuming you are starting from scratch in AWS, apply the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template using the console. This creates some an IAM user, an Elastic ip, and an instance role we will reference in the other stack.
+**You run these templates entirely at your own risk, and you must accept responsibility for any costs incurred by doing so!**
 
-**The Elastic ip costs money when not attached to an instance**
+First, apply the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template using the console. This creates some an IAM user with admin powers, an Elastic ip, and an instance role we will reference in the other stack.
 
-* Once your IAM user has been created, use their access keys to set up a profile in `awscli` called 'DataScienceStack'
+Once your IAM user has been created, use their access keys to set up a profile in `awscli` called 'DataScienceStack'
 
 ```bash
 aws configure --profile DataScienceStack
 ```
 
-* tell Git to use AWS CodeCommit credential-helper:
+Now tell Git to use AWS CodeCommit credential-helper:
 
 ```bash
 git config --global credential.helper '!aws codecommit --profile DataScienceStack credential-helper $@'
@@ -30,18 +30,19 @@ git config --global credential.helper '!aws codecommit --profile DataScienceStac
 git config --global credential.UseHttpPath true
 ```
 
-* Create a CodeCommit respository to hold your work, making a note of the value returned in the `cloneUrlHttp` field
+Create a CodeCommit respository to hold your work, making a note of the value returned in the `cloneUrlHttp` field
 
 ```bash
 aws codecommit --profile DataScienceStack create-repository --repository-name DataScienceStack
 ```
 
-* Push this repository to the CodeCommit repo:
+Push this repository to the CodeCommit repo:
 
 ```bash
 git push <cloneUrlHttp> --all
 ```
 
+Because of the instance role we set up in the first CloudFormation template, instances created by the second template will have read-only access to your CodeCommit repositories. This allows the instance to pull the repository and create the same Docker stack.
 
 ## Normal Use
 
