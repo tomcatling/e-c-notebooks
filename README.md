@@ -3,8 +3,9 @@
 This repository is an example of setting up a Docker stack with JupyterLab for local development, with some helpful CloudFormation templates which allow you to execute a notebook *in the same enviroment* on an EC2 instance. There are many advantages to working in this way:
 
 * local development is free
-* EC2 instances are very scalable
 * your environment is consistent
+* EC2 instances are very scalable
+* CloudFormation allows programmatic control of all your AWS resources. Everything is deterministic and disposable.
 
 ## Setup
 
