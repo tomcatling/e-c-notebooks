@@ -12,16 +12,22 @@ Some manual work is required to set up this workflow.
 
 * Assuming you are starting from scratch in AWS, apply the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template using the console. This creates some an IAM user, an Elastic ip, and an instance role we will reference in the other stack.
 
-**The Elastic ip costs money**. *Even on the free tier, you pay for this when it is not associated with an instance (about $90/yr).*
+**The Elastic ip costs money when not attached to an instance**
 
 * Once your IAM user has been created, use their access keys to set up a profile in awscli called 'DataScienceStack'
 
-`aws configure --profile DataScienceStack`
+```bash
+aws configure --profile DataScienceStack
+```
 
 * tell Git to use AWS CodeCommit credential-helper:
 
-`git config --global credential.helper '!aws codecommit --profile DataScienceStack credential-helper $@'`
-`git config --global credential.UseHttpPath true`
+```bash
+git config --global credential.helper '!aws codecommit --profile DataScienceStack credential-helper $@'
+```
+```bash
+git config --global credential.UseHttpPath true
+```
 
 * Create a CodeCommit respository to hold your work, making a note of the value returned in the `cloneUrlHttp` field
 
