@@ -33,7 +33,7 @@ git config --global credential.UseHttpPath true
 Add the CodeCommit repository as a push destination so the EC2 instance can get to the code.
 
 ```bash
-git remote set-url --add --push https://git-codecommit.eu-west-2.amazonaws.com/v1/repos/DataScienceStack
+git remote set-url --add --push origin https://git-codecommit.eu-west-2.amazonaws.com/v1/repos/DataScienceStack
 ```
 
 Push this repository to the CodeCommit repo:
