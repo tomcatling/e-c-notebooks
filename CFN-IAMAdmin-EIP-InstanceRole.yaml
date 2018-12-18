@@ -84,6 +84,7 @@ Resources:
             Action:
               - 's3:List*'
               - 'codecommit:*'
+              - 'ecr:*'
             Resource: '*'
       Roles:
         - !Ref ListS3BucketsRole
