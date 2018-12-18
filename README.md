@@ -5,7 +5,7 @@ This repository is an example of setting up a Docker stack with JupyterLab for l
 * local development is free
 * your environment is consistent
 * EC2 instances are very scalable
-* CloudFormation allows programmatic control of all your AWS resources. Everything is deterministic and disposable.
+* CloudFormation allows programmatic control of all your AWS resources
 
 ## Setup
 
@@ -13,7 +13,7 @@ Some manual work is required to set up this workflow. The instructions here assu
 
 **You run these templates entirely at your own risk, and you must accept responsibility for any costs incurred by doing so!**
 
-First, apply the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template using the console. This creates some an IAM user with admin powers, an Elastic ip, and an instance role we will reference in the other stack.
+First, apply the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template using the console in a browser. This creates an IAM user with admin powers, an Elastic ip, an ECR respository, a CodeCommit repository and an instance role we will reference in the other stack.
 
 Once your IAM user has been created, use their access keys to set up a profile in `awscli` called 'DataScienceStack'
 
