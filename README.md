@@ -34,7 +34,7 @@ Create a CodeCommit respository to hold your work, making a note of the value re
 
 ```bash
 aws codecommit --profile DataScienceStack create-repository --repository-name DataScienceStack
-git remote set-url origin --push https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/DataScienceStack
+git remote set-url --add --push https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/DataScienceStack
 ```
 
 Push this repository to the CodeCommit repo:
