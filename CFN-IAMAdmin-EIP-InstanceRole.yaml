@@ -10,6 +10,11 @@ Description: >-
   Note that you will need to specify the CAPABILITY_IAM flag when you 
   create the stack to allow this template to execute.  
 Resources:
+  Type: AWS::CodeCommit::Repository
+    Properties: 
+      RepositoryDescription: Repo to allow EC2 access to the DataScienceStack environment.
+      RepositoryName: DataScienceStack
+  - Trigger
   InstanceECR:
     Type: AWS::ECR::Repository
     Properties: 

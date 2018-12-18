@@ -1,5 +1,5 @@
 jupyterlab:
-  image: 631013143897.dkr.ecr.eu-west-1.amazonaws.com/data-science-stack
+  image: 631013143897.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack
   ports:
     - "8888:8888"
   volumes:

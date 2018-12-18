@@ -30,26 +30,26 @@ git config --global credential.helper '!aws codecommit --profile DataScienceStac
 git config --global credential.UseHttpPath true
 ```
 
-Create a CodeCommit respository to hold your work, making a note of the value returned in the `cloneUrlHttp` field
+Add the CodeCommit repository as a push destination so the EC2 instance can get to the code.
 
 ```bash
-aws codecommit --profile DataScienceStack create-repository --repository-name DataScienceStack
-git remote set-url --add --push https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/DataScienceStack
+git remote set-url --add --push https://git-codecommit.eu-west-2.amazonaws.com/v1/repos/DataScienceStack
 ```
 
 Push this repository to the CodeCommit repo:
 
 ```bash
-git push <cloneUrlHttp> --all
+git push
 ```
 
-Because of the instance role we set up in the first CloudFormation template, instances created by the second template will have read-only access to your CodeCommit repositories. This allows the instance to pull the repository and create the same Docker stack.
+Because of the instance role we set up in the first CloudFormation template, instances created by the second template will have access to your CodeCommit repositories. This allows the instance to pull the repository and create the same Docker stack.
 
+## Building the image
 
 ```bash
-docker build -t <AWS Account ID>.dkr.ecr.eu-west-1.amazonaws.com/data-science-stack .
-`aws ecr --profile DataScienceStack get-login --region eu-west-1 --no-include-email`
-docker push <AWS Account ID>.dkr.ecr.eu-west-1.amazonaws.com/data-science-stack
+docker build -t <AWS Account ID>.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack .
+`aws ecr --profile DataScienceStack get-login --region eu-west-2 --no-include-email`
+docker push <AWS Account ID>.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack
 ```
 
 ## Normal Use
@@ -58,7 +58,7 @@ Stand up the EC2 stack using:
 
 `aws cloudformation --profile DataScienceStack create-stack --stack-name EC2Test --template-body file://CFN-EC2-JupyterLab.yaml --parameters file://CFNParams-EC2-JupyterLab.json`
 
-git push https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/MyDemoRepo --all
+git push https://git-codecommit.eu-west-2.amazonaws.com/v1/repos/MyDemoRepo --all
 
 This repo contains two cloudformation stacks which:
 
