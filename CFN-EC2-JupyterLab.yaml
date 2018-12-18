@@ -55,7 +55,7 @@ Resources:
              git clone ${RepositoryAddress}
              cd /home/ec2-user/DataScienceStack
              #docker build -t 631013143897.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack .
-             #`aws ecr get-login --region eu-west-2 --no-include-email`
+             `aws ecr get-login --region eu-west-2 --no-include-email`
              #docker push 631013143897.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack
              docker-compose up
   InstanceIpAssociation:
