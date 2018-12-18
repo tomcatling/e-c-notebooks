@@ -10,6 +10,10 @@ Description: >-
   Note that you will need to specify the CAPABILITY_IAM flag when you 
   create the stack to allow this template to execute.  
 Resources:
+  InstanceECR:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: data-science-stack
   InstanceEIP:
     Type: AWS::EC2::EIP
   CFNUser:
