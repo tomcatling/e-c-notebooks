@@ -36,7 +36,7 @@ Resources:
       InstanceType: !Ref 'InstanceType'
       SecurityGroups: [!Ref 'InstanceSecurityGroup', !Ref 'JupyterSecurityGroup']
       KeyName: !Ref 'KeyName'
-      ImageId: ami-02e680c4540db351e
+      ImageId: ami-0bab1e17be043c7e9
       IamInstanceProfile: !ImportValue 'InstanceProfile::S3Access'
       UserData:
         Fn::Base64: !Sub |
