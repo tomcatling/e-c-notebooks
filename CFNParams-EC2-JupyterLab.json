@@ -14,6 +14,10 @@
   {
   	"ParameterKey": "SSHLocation",
   	"ParameterValue": "89.36.64.36/32"
+  },
+  {
+    "ParameterKey": "ImageTag",
+    "ParameterValue": "631013143897.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack"
   }
 ]
 

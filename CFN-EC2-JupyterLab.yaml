@@ -15,7 +15,9 @@ Parameters:
   RepositoryAddress:
     Description: Http address of the DataScienceStack repo in AWS CloudCommit
     Type: String
-    Default: none
+  ImageTag:
+    Description: AWS Account ID
+    Type: String
   InstanceType:
     Description: WebServer EC2 instance type
     Type: String
@@ -52,12 +54,13 @@ Resources:
              git config --global credential.helper '!aws codecommit credential-helper $@'
              git config --global credential.UseHttpPath true
              cd /home/ec2-user/
-             git clone ${RepositoryAddress}
-             cd /home/ec2-user/DataScienceStack
-             #docker build -t 631013143897.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack .
+             mkdir /home/ec2-user/repo
+             cd repo
+             git clone ${RepositoryAddress} .
              `aws ecr get-login --region eu-west-2 --no-include-email`
-             #docker push 631013143897.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack
-             docker-compose up
+             #docker build -t ${ImageTag} .
+             #docker push ${ImageTag}
+             IMAGE_TAG=${ImageTag} docker-compose up
   InstanceIpAssociation:
     Type: AWS::EC2::EIPAssociation
     Properties:
