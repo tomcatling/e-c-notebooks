@@ -9,7 +9,7 @@
   },
   {
   	"ParameterKey": "RepositoryAddress",
-  	"ParameterValue": "https://git-codecommit.us-east-2.amazonaws.com/v1/repos/DataScienceStack"
+  	"ParameterValue": "https://git-codecommit.eu-west-2.amazonaws.com/v1/repos/DataScienceStack"
   },
   {
   	"ParameterKey": "SSHLocation",
