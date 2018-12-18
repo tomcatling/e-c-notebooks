@@ -10,7 +10,7 @@ Description: >-
   Note that you will need to specify the CAPABILITY_IAM flag when you 
   create the stack to allow this template to execute.  
 Resources:
-  ProjectRepo:
+  CodeCommitRepo:
     Type: AWS::CodeCommit::Repository
     Properties: 
       RepositoryDescription: Repo to allow EC2 access to the DataScienceStack environment.
@@ -106,6 +106,10 @@ Outputs:
     Value: !Ref ListS3BucketsInstanceProfile
     Export:
       Name: "InstanceProfile::S3Access"
+  CodeCommitAddress:
+    Value: !GetAtt CodeCommitRepo.CloneUrlHttp
+    Export:
+      Name: "CodeCommitAddress"
   InstanceEIPAllocationId:
     Value: !GetAtt InstanceEIP.AllocationId
     Export:

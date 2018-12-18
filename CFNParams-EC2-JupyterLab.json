@@ -1,5 +1,9 @@
 [
   {
+    "ParameterKey": "CodeCommitRepoName",
+    "ParameterValue": "data-science-stack"
+  }, 
+  {
     "ParameterKey": "KeyName",
     "ParameterValue": "aws-ec2"
   }, 

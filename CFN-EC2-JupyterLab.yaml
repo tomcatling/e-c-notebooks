@@ -12,11 +12,15 @@ Parameters:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
-  RepositoryAddress:
+  CodeCommitAddress:
     Description: Http address of the DataScienceStack repo in AWS CloudCommit
+    Default: !ImportValue 'CodeCommitAddress'
     Type: String
   ImageTag:
     Description: AWS Account ID
+    Type: String
+  CodeCommitRepoName:
+    Description: Name of the CodeCommit repository created for this stack.
     Type: String
   InstanceType:
     Description: WebServer EC2 instance type
@@ -56,7 +60,7 @@ Resources:
              cd /home/ec2-user/
              mkdir /home/ec2-user/repo
              cd repo
-             git clone ${RepositoryAddress} .
+             git clone ${CodeCommitAddress} .
              `aws ecr get-login --region eu-west-2 --no-include-email`
              #docker build -t ${ImageTag} .
              #docker push ${ImageTag}
