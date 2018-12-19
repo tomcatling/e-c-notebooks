@@ -9,7 +9,7 @@ This repository is a recipe for setting up a Docker stack with JupyterLab for lo
 
 Some manual work is required to set up this workflow. The instructions here assume you are starting from scratch in AWS with a root account that currently has no resources. You will need a basic understanding of terminal usage, Git and Bash. Many things will probably require tweaking to work on a Windows machine. If you make any improvements to your forked version of the repository, please submit a pull request! [Guide for collaborators.]()
 
-## Setup
+# Setup
 
 **You run these templates entirely at your own risk, and must accept responsibility for costs incurred by doing so!**
 
@@ -107,7 +107,7 @@ tail -f /var/log/cloud-init-output.log
 
 This givs you the standard output created by the script (CloudFormation User Data) which installs docker then runs your job.
 
-## Normal Use
+# Normal Use
 
 Assuming the build went smoothly, we can now use this setup to run arbitrary notebooks from within the reopsitory! Let's finish by runnings the example notebook from this repository:
 
