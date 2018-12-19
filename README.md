@@ -9,9 +9,11 @@ This repository is a recipe for setting up a Docker stack with JupyterLab for lo
 
 ## Setup
 
-Some manual work is required to set up this workflow. The instructions here assume you are starting from scratch in AWS with a root account that currently has no resources. You will need a basic understanding of terminal usage and, if anything goes wrong (quite possible), some understanding of Bash for debugging.
+Some manual work is required to set up this workflow. The instructions here assume you are starting from scratch in AWS with a root account that currently has no resources. You will need a basic understanding of terminal usage, Git and Bash. Many things will probably require tweaking to work on a Windows machine. If you make any improvements to your forked version of the repository, please submit a pull request! [Guide for collaborators.]()
 
-**You run these templates entirely at your own risk, and must accept responsibility for any costs incurred by doing so! If things go wrong, go into the CloudFormation Console and delete any stacks to avoid paying for their resources.**
+**You run these templates entirely at your own risk, and must accept responsibility for any costs incurred by doing so!**
+
+**If things go wrong, go into the CloudFormation Console and delete any stacks to avoid paying for their resources.**
 
 First, fork this repository so that you have your own copy. Clone it to your local machine and apply the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template using the AWS Console in a browser. This creates an IAM user with admin powers, an ECR respository, an Elastic IP, a CodeCommit repository and an EC2 instance role we will reference in the other stack. The idea is that this stack creates all of the (mostly free) infrastructure we need to run the job, while the second ephemeral stack holds the expensive resources used for the job itself.
 
