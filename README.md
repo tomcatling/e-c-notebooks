@@ -11,7 +11,7 @@ Some manual work is required to set up this workflow. The instructions here assu
 
 ## Setup
 
-**You run these templates entirely at your own risk, and must accept responsibility for any costs incurred by doing so!**
+**You run these templates entirely at your own risk, and must accept responsibility for costs incurred by doing so!**
 
 **If things go wrong, go into the CloudFormation Console and delete any stacks to avoid paying for their resources.**
 
