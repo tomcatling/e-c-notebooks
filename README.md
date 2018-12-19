@@ -7,9 +7,9 @@ This repository is a recipe for setting up a Docker stack with JupyterLab for lo
 * EC2 instances are very scalable
 * CloudFormation allows programmatic control of all your AWS resources
 
-## Setup
-
 Some manual work is required to set up this workflow. The instructions here assume you are starting from scratch in AWS with a root account that currently has no resources. You will need a basic understanding of terminal usage, Git and Bash. Many things will probably require tweaking to work on a Windows machine. If you make any improvements to your forked version of the repository, please submit a pull request! [Guide for collaborators.]()
+
+## Setup
 
 **You run these templates entirely at your own risk, and must accept responsibility for any costs incurred by doing so!**
 
