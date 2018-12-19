@@ -105,11 +105,22 @@ Once you are 'in', the most useful command is probably:
 tail -f /var/log/cloud-init-output.log
 ```
 
-This givs you the standard output created by the script (CloudFormation User Data) which installs docker then builds and pushes the image.
+This givs you the standard output created by the script (CloudFormation User Data) which installs docker then runs your job.
 
 ## Normal Use
 
-Assuming the build went smoothly, we can now use this setup to run arbitrary notebooks from within the reopsitory. Remember that the EC2 instances only have access to the version of the repository that is in CodeCommit; if you make changes locally or only push them to GitHub, the instance will not see them. 
+Assuming the build went smoothly, we can now use this setup to run arbitrary notebooks from within the reopsitory! Let's finish by runnings the example notebook from this repository:
+
+```bash
+aws cloudformation --profile DataScienceStack create-stack --stack-name EC2Test --template-body file://CFN-EC2-JupyterLab.yaml --parameters file://CFNParams-EC2-JupyterLab.json`
+```
+
+You should see the output of this job in S3.
+
+
+# Errata
+
+Remember that the EC2 instances only have access to the version of the repository that is in CodeCommit; if you make changes locally or only push them to GitHub, the instance will not see them. 
 
 Stand up the EC2 stack using:
 
