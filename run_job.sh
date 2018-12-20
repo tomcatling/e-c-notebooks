@@ -27,4 +27,4 @@ if [ ! -f ${IPYNB_FILE} ]; then
     fail_exit "File: ${IPYNB_FILE} - does not exist"
 fi
 
-aws cloudformation create-stack --stack-name builder --template-body file://CFN_stacks/job-stack.yaml --parameters file://CFN_stacks/stack-config.json
+aws cloudformation create-stack --stack-name headless-job --template-body file://CFN_stacks/job-stack.yaml --parameters file://CFN_stacks/stack-config.json

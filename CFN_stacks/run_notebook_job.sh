@@ -27,4 +27,4 @@ if [ ! -f ${IPYNB_FILE} ]; then
     fail_exit "File: ${IPYNB_FILE} - does not exist"
 fi
 
-SCRIPT_PATH=${IPYNB_FILE} docker-compose -f ../docker/docker-compose-headless-job.yml --exit-code-from jupyter --no-color
+SCRIPT_PATH=${IPYNB_FILE} docker-compose -f ../docker/docker-compose-headless-job.yml --exit-code-from jupyter --no-color up
