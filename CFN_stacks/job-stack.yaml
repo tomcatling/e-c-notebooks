@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Metadata:
+  License: Apache-2.0
+Description: >-
+  This template creates creates an EC2 instance running an Ubuntu Deep Learning Base
+  AMI attached to the EIP referenced by 'InstanceEIP::Address' with the profile 
+  'InstanceProfile::S3Access' (both of these created in a previous stack).  
+  Ports 22,8888 and 443 are open to connections from <ip range>.
+  On startup, the image will install jupyterlab and run a server.
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  CodeCommitAddress:
+    Description: Http address of the DataScienceStack repo in AWS CloudCommit
+    Default: !ImportValue 'CodeCommitAddress'
+    Type: String
+  NotebookJobPath:
+    Description: Repository path of the notebook job you want to run.
+    Type: String
+  ImageTag:
+    Description: Tag for the image created by the stack
+    Default: data-science-stack
+    Type: String
+  CodeCommitRepoName:
+    Description: Name of the CodeCommit repository created for this stack.
+    Default: data-science-stack
+    Type: String
+  InstanceType:
+    Description: WebServer EC2 instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues: [t2.nano, t2.micro, t2.small, t2.medium, t2.large]
+    ConstraintDescription: must be a valid EC2 instance type.
+  SSHLocation:
+    Description: The IP address range that can be used to SSH to the EC2 instances
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref 'InstanceType'
+      SecurityGroups: [!Ref 'InstanceSecurityGroup', !Ref 'JupyterSecurityGroup']
+      KeyName: !Ref 'KeyName'
+      ImageId: ami-0bab1e17be043c7e9
+      IamInstanceProfile: !ImportValue 'InstanceProfile::S3Access'
+      UserData:
+        Fn::Base64: !Sub |
+             #!/bin/bash
+             yum update -y
+             amazon-linux-extras install docker
+             usermod -a -G docker ec2-user
+             service docker start &
+             yum install git -y
+             curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
+             chmod +x /usr/bin/docker-compose
+             export HOME=/root
+             git config --global credential.helper '!aws codecommit credential-helper $@'
+             git config --global credential.UseHttpPath true
+             cd /home/ec2-user/
+             git clone ${CodeCommitAddress} .
+             $(aws ecr get-login --no-include-email --region ${AWS::Region})
+             docker pull ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
+             jobfile=${NotebookJobPath} sh run_notebook_job.sh
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: !Ref 'SSHLocation'
+  JupyterSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP access to default jupyter port
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 8888
+        ToPort: 8888
+        CidrIp: !Ref 'SSHLocation'
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: !Ref 'SSHLocation'
+Outputs:
+  InstanceId:
+    Description: InstanceId of the newly created EC2 instance
+    Value: !Ref 'EC2Instance'
+  AZ:
+    Description: Availability Zone of the newly created EC2 instance
+    Value: !GetAtt [EC2Instance, AvailabilityZone]
+  PublicDNS:
+    Description: Public DNSName of the newly created EC2 instance
+    Value: !GetAtt [EC2Instance, PublicDnsName]
+  PublicIP:
+    Description: Public IP address of the newly created EC2 instance
+    Value: !GetAtt [EC2Instance, PublicIp]

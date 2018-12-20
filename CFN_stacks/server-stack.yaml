@@ -17,10 +17,12 @@ Parameters:
     Default: !ImportValue 'CodeCommitAddress'
     Type: String
   ImageTag:
-    Description: AWS Account ID
+    Description: Tag for the image created by the stack
+    Default: data-science-stack
     Type: String
   CodeCommitRepoName:
     Description: Name of the CodeCommit repository created for this stack.
+    Default: data-science-stack
     Type: String
   InstanceType:
     Description: WebServer EC2 instance type
@@ -58,18 +60,10 @@ Resources:
              git config --global credential.helper '!aws codecommit credential-helper $@'
              git config --global credential.UseHttpPath true
              cd /home/ec2-user/
-             mkdir /home/ec2-user/repo
-             cd repo
              git clone ${CodeCommitAddress} .
-             `aws ecr get-login --region eu-west-2 --no-include-email`
-             #docker build -t ${ImageTag} .
-             #docker push ${ImageTag}
-             IMAGE_TAG=${ImageTag} docker-compose up
-  InstanceIpAssociation:
-    Type: AWS::EC2::EIPAssociation
-    Properties:
-      EIP: !ImportValue 'InstanceEIP::Address'
-      InstanceId: !Ref 'EC2Instance'
+             $(aws ecr get-login --no-include-email --region ${AWS::Region})
+             docker pull ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
+             IMAGE_TAG=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} docker-compose up
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:

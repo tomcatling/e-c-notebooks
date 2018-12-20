@@ -8,19 +8,22 @@ Description: >-
   EC2 instances to access S3 buckets.
   - a new ElasticIp (EIP).
   Note that you will need to specify the CAPABILITY_IAM flag when you 
-  create the stack to allow this template to execute.  
+  create the stack to allow this template to execute.
+Parameters:
+  RepositoryName:
+    Description: Name of the codecommit repo for this project
+    Default: data-science-stack
+    Type: String
 Resources:
   CodeCommitRepo:
     Type: AWS::CodeCommit::Repository
     Properties: 
       RepositoryDescription: Repo to allow EC2 access to the DataScienceStack environment.
-      RepositoryName: DataScienceStack
+      RepositoryName: data-science-stack
   InstanceECR:
     Type: AWS::ECR::Repository
     Properties: 
-      RepositoryName: data-science-stack
-  InstanceEIP:
-    Type: AWS::EC2::EIP
+      RepositoryName: !Ref RepositoryName
   CFNUser:
     Type: 'AWS::IAM::User'
   CFNUserGroup:
@@ -110,14 +113,6 @@ Outputs:
     Value: !GetAtt CodeCommitRepo.CloneUrlHttp
     Export:
       Name: "CodeCommitAddress"
-  InstanceEIPAllocationId:
-    Value: !GetAtt InstanceEIP.AllocationId
-    Export:
-      Name: "InstanceEIP::AllocationId"
-  InstanceEIPAddress:
-    Value: !Ref InstanceEIP
-    Export:
-      Name: "InstanceEIP::Address"
   AccessKey:
     Value: !Ref CFNKeys
     Description: AWSAccessKeyId of new user
