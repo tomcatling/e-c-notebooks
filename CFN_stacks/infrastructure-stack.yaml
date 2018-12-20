@@ -104,6 +104,15 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Path: /
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      BucketName: job-outputs
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Retain
 Outputs:
   InstanceRole:
     Value: !Ref ListS3BucketsInstanceProfile
