@@ -1,13 +1,13 @@
 # Outline
 
-This repository is a recipe for setting up a Docker stack with JupyterLab for local development, with some helpful scripts and CloudFormation templates which allow you to execute a Jupyter notebook *in the same enviroment* on an EC2 instance. This instance exists in an ephemeral cloudformation stack which will tear itself down after the job completes (or if it times out). There are many advantages to working in this way:
+This repository is a recipe for setting up a Docker stack with JupyterLab for local development, with some helpful scripts and CloudFormation templates which allow you to execute a Jupyter notebook *in the same enviroment* on an EC2 instance. The instance is associated with an ephemeral stack which will tear itself down after the job completes (or if it times out). There are many advantages to working in this way:
 
 * local development is free
-* your environment is consistent
 * EC2 instances are very scalable
-* CloudFormation allows programmatic control of all your AWS resources
+* your environment is consistent
+* CloudFormation allows tight control of your AWS resources
 
-Some manual work is required to set up this workflow. The instructions here assume you are starting from scratch in AWS with a root account that currently has no resources. You will need a basic understanding of terminal usage, Git and Bash. Many things will probably require tweaking to work on a Windows machine. If you make any improvements to your forked version of the repository, please submit a pull request! [Guide for collaborators.]()
+Some manual work is required to set up this workflow. The instructions here assume you are starting from scratch in AWS with a root account that currently has no resources. You will need a basic understanding of terminal usage, Git and Bash. Many things will probably require tweaking to work on a Windows machine. If you make any improvements please submit a pull request!
 
 # Setup
 
@@ -15,7 +15,7 @@ Some manual work is required to set up this workflow. The instructions here assu
 
 **If things go wrong, go into the CloudFormation Console and delete any stacks to avoid paying for their resources.**
 
-First, fork this repository so that you have your own copy. Clone it to your local machine and apply the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template using the AWS Console in a browser. This creates an IAM user with admin powers, an ECR respository, an Elastic IP, a CodeCommit repository and an EC2 instance role we will reference in the other stack. The idea is that this stack creates all of the (mostly free) infrastructure we need to run the job, while the second ephemeral stack holds the expensive resources used for the job itself.
+First, fork this repository, then clone it to your local machine and apply the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template in a browser using the AWS Console. This creates an IAM user with admin powers, an ECR respository, an Elastic IP, a CodeCommit repository and an EC2 instance role we will reference in the other stack. The idea is that this stack holds all of the (mostly free) infrastructure we need to run the job, while the second ephemeral stack holds the expensive resources used for the job itself.
 
 Once this CFN template has been succesfully created, go into the 'outputs' tab and make a note of the 'ProjectRepoAddress' field. This is the http address of the CodeCommit repository created by the template, which we will need later.
 
@@ -27,11 +27,11 @@ mv ~/Downloads/aws-ec2.pem ~/.ssh/aws-ec2.pem && chmod 600 ~/.ssh/aws-ec2.pem
 
 We will use this later to connect to our instances.
 
-Next, go into the IAM Console and create a fresh access key for your new IAM user. 
+Finally, go into the IAM Console and create a fresh access key for your new IAM user. 
 
 **Treat this key as a sensitive password**. You have delegated root powers of your AWS account to this IAM user. Misuse of the key could cost you a lot of money.
 
-Configure your local `awscli` to use this access key ID and secret key :
+Configure your local `awscli` to use this access key ID and secret key:
 
 ```bash
 aws configure --profile DataScienceStack
@@ -48,36 +48,27 @@ git config --global credential.helper '!aws codecommit --profile DataScienceStac
 git config --global credential.UseHttpPath true
 ```
 
-Add the CodeCommit repository as a push destination, using the address you noted previously:
+Add the CodeCommit repository as a push destination, using the address you noted previously, and push:
 
 ```bash
 git remote set-url --add --push origin <repository address>
 ```
-
-Now any pushes for this repository will also go to CodeCommit. Let's do an initial push to see what happens:
-
 ```bash
 git push origin master
 ```
 
-Note that if you are working on a Mac you will need to follow [these](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-https-unixes.html#setting-up-https-unixes-credential-helper) additional steps to stop your Keychain from unhelpfully storing the temporary password which the credential-helper provides to Git.
+Note that if you are working on a Mac you will need to follow [these](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-https-unixes.html#setting-up-https-unixes-credential-helper) additional steps to stop your Keychain from storing the temporary password which the credential-helper provides to Git.
 
-Now we are 90% of the way there. We have all our infrastructure, and the code in your local Git repository is mirrored in CodeCommit. The first thing we will use this setup for is building the Docker image:
+Now we are 90% of the way there. We have all our infrastructure, and the code in your local Git repository is mirrored in CodeCommit. The first thing we will use this setup for is building the Docker image.
 
 
 ## Building the image
 
-The first stack created an ECR repository which we will keep our image in. Other stacks are able to import the location of this repository, which allows instances in EC2 to get very quick access to the image. 
+The first stack created an ECR repository which we will keep our image in. Other stacks are able to import the location of this repository, which allows instances in EC2 to get quick access to the image. 
 
 Pushing remotely to ECR can be slow, and building images on a local machine can be a pain. Let's use our stack to build the image for us with a disposable EC2 instance.
 
 Running the `CFN-build-and-push.yaml` template will:
-
-```bash
-docker build -t <AWS Account ID>.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack .
-`aws ecr --profile DataScienceStack get-login --region eu-west-2 --no-include-email`
-docker push <AWS Account ID>.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack
-```
 
 * create an EC2 instance
 * install Docker on that instance
@@ -85,13 +76,13 @@ docker push <AWS Account ID>.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack
 * `push` the resulting image to your ECR repository.
 * shut down the instance
 
-This may take 30 minutes or so. While this is running, let's go through some ways of checking on the status of the job.
+This should take up to half an hour. While this is running, let's go through some ways of checking on the status of the job.
 
 ## Connecting to an Instance
 
 The most basic way of checking on the status of your job is look at the progress of the stack creation in the CloudFormation Console. If this fails, then something is wrong with the template.
 
-If this is fine, you may look at the instance itself in the EC2 console. This will tell you whether or not the instance exists and is running happily, but it gives no detail on what the instance is actually doing.
+If this is fine, you may look at the instance itself in the EC2 console. This will tell you whether or not the instance exists and is running, but it gives no detail on what the instance is actually doing.
 
 The best way to see what's going on is to SSH into the instance.
 
@@ -105,7 +96,7 @@ Once you are 'in', the most useful command is probably:
 tail -f /var/log/cloud-init-output.log
 ```
 
-This givs you the standard output created by the script (CloudFormation User Data) which installs docker then runs your job.
+This givs you the standard output created by the script (CloudFormation User Data) which installs docker and runs your job - in this case building and pushing the image.
 
 # Normal Use
 
@@ -119,6 +110,13 @@ You should see the output of this job in S3.
 
 
 # Errata
+
+```bash
+docker build -t <AWS Account ID>.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack .
+`aws ecr --profile DataScienceStack get-login --region eu-west-2 --no-include-email`
+docker push <AWS Account ID>.dkr.ecr.eu-west-2.amazonaws.com/data-science-stack
+```
+
 
 Remember that the EC2 instances only have access to the version of the repository that is in CodeCommit; if you make changes locally or only push them to GitHub, the instance will not see them. 
 
