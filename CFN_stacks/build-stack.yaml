@@ -60,7 +60,7 @@ Resources:
               git clone ${CodeCommitRepo} .
               cd docker
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
-              docker build -t ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} .
+              docker build -t ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} ./docker
               docker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
             - CodeCommitRepo:
                Fn::ImportValue: 'CodeCommitAddress'
