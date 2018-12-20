@@ -56,7 +56,7 @@ Resources:
               export HOME=/root
               git config --global credential.helper '!aws codecommit credential-helper $@'
               git config --global credential.UseHttpPath true
-              cd /home/ec2-user/
+              cd /home/ec2-user/ && mkdir repo && cd repo
               git clone ${CodeCommitRepo} .
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
               docker build -t ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} ./docker
