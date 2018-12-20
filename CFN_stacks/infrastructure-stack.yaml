@@ -108,11 +108,11 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       AccessControl: PublicRead
-      BucketName: job-outputs
+      BucketName: tomcat-job-outputs
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
 Outputs:
   InstanceRole:
     Value: !Ref ListS3BucketsInstanceProfile

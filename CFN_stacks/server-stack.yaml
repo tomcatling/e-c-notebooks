@@ -12,10 +12,6 @@ Parameters:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
-  CodeCommitAddress:
-    Description: Http address of the DataScienceStack repo in AWS CloudCommit
-    Default: !ImportValue 'CodeCommitAddress'
-    Type: String
   ImageTag:
     Description: Tag for the image created by the stack
     Default: data-science-stack
@@ -47,23 +43,26 @@ Resources:
       ImageId: ami-0bab1e17be043c7e9
       IamInstanceProfile: !ImportValue 'InstanceProfile::S3Access'
       UserData:
-        Fn::Base64: !Sub |
-             #!/bin/bash
-             yum update -y
-             amazon-linux-extras install docker
-             usermod -a -G docker ec2-user
-             service docker start &
-             yum install git -y
-             curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
-             chmod +x /usr/bin/docker-compose
-             export HOME=/root
-             git config --global credential.helper '!aws codecommit credential-helper $@'
-             git config --global credential.UseHttpPath true
-             cd /home/ec2-user/
-             git clone ${CodeCommitAddress} .
-             $(aws ecr get-login --no-include-email --region ${AWS::Region})
-             docker pull ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
-             IMAGE_TAG=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} docker-compose up
+        Fn::Base64: !Sub 
+            - |
+              #!/bin/bash
+              yum update -y
+              amazon-linux-extras install docker
+              usermod -a -G docker ec2-user
+              service docker start &
+              yum install git -y
+              curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
+              chmod +x /usr/bin/docker-compose
+              export HOME=/root
+              git config --global credential.helper '!aws codecommit credential-helper $@'
+              git config --global credential.UseHttpPath true
+              cd /home/ec2-user/ && mkdir repo && cd repo
+              git clone ${CodeCommitRepo} .
+              $(aws ecr get-login --no-include-email --region ${AWS::Region})
+              docker pull ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
+              IMAGE_TAG=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} docker-compose up
+            - CodeCommitRepo:
+               Fn::ImportValue: 'CodeCommitAddress'
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -81,10 +80,6 @@ Resources:
       - IpProtocol: tcp
         FromPort: 8888
         ToPort: 8888
-        CidrIp: !Ref 'SSHLocation'
-      - IpProtocol: tcp
-        FromPort: 443
-        ToPort: 443
         CidrIp: !Ref 'SSHLocation'
 Outputs:
   InstanceId:
