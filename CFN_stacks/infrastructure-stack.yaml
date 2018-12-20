@@ -85,7 +85,7 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - 's3:List*'
+              - 's3:*'
               - 'codecommit:*'
               - 'ecr:*'
             Resource: '*'
