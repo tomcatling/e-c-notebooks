@@ -9,4 +9,4 @@ jupyterlab:
     - JUPYTER_ENABLE_LAB=yes
     - GRANT_SUDO=yes
   user: root
-  entrypoint: papermill /home/jovyan/repo/${SCRIPT_PATH} s3://tomcat-job-outputs/output.ipynb
+  entrypoint: papermill /home/jovyan/repo/${NB_PATH} s3://tomcat-job-outputs/output.ipynb
