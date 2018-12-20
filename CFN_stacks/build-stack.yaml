@@ -43,24 +43,28 @@ Resources:
       ImageId: ami-0bab1e17be043c7e9
       IamInstanceProfile: !ImportValue 'InstanceProfile::S3Access'
       UserData:
-        Fn::Base64: !Sub |
-             #!/bin/bash
-             yum update -y
-             amazon-linux-extras install docker
-             usermod -a -G docker ec2-user
-             service docker start &
-             yum install git -y
-             curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
-             chmod +x /usr/bin/docker-compose
-             export HOME=/root
-             git config --global credential.helper '!aws codecommit credential-helper $@'
-             git config --global credential.UseHttpPath true
-             cd /home/ec2-user/
-             git clone ${!ImportValue 'CodeCommitAddress'} .
-             cd docker
-             $(aws ecr get-login --no-include-email --region ${AWS::Region})
-             docker build -t ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} .
-             docker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
+        Fn::Base64: !Sub 
+            - |
+              #!/bin/bash
+              yum update -y
+              amazon-linux-extras install docker
+              usermod -a -G docker ec2-user
+              service docker start &
+              yum install git -y
+              curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
+              chmod +x /usr/bin/docker-compose
+              export HOME=/root
+              git config --global credential.helper '!aws codecommit credential-helper $@'
+              git config --global credential.UseHttpPath true
+              cd /home/ec2-user/
+              git clone ${CodeCommitRepo} .
+              cd docker
+              $(aws ecr get-login --no-include-email --region ${AWS::Region})
+              docker build -t ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} .
+              docker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
+            - CodeCommitRepo:
+               Fn::ImportValue:
+                 !ImportValue 'CodeCommitAddress'
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
