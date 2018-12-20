@@ -63,8 +63,7 @@ Resources:
               docker build -t ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} .
               docker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
             - CodeCommitRepo:
-               Fn::ImportValue:
-                 !ImportValue 'CodeCommitAddress'
+               Fn::ImportValue: 'CodeCommitAddress'
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
