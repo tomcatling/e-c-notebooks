@@ -63,7 +63,7 @@ Resources:
               git clone ${CodeCommitRepo} .
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
               docker pull ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
-              cd CFN_stacks && jobfile=${NotebookJobPath} sh run_notebook_job.sh ${NotebookJobPath}
+              cd CFN_stacks && jobfile=${NotebookJobPath} sh run_notebook_job.sh ${NotebookJobPath} ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} 
             - CodeCommitRepo:
                Fn::ImportValue: 'CodeCommitAddress'
   InstanceSecurityGroup:
