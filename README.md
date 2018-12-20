@@ -13,9 +13,7 @@ Some manual work is required to set up this workflow. The instructions here assu
 
 **You run these templates entirely at your own risk, and must accept responsibility for costs incurred by doing so!**
 
-**If things go wrong, go into the CloudFormation Console and delete any stacks to avoid paying for their resources.**
-
-First, fork this repository, then clone it to your local machine and apply the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template in a browser using the AWS Console. This creates an IAM user with admin powers, an ECR respository, an Elastic IP, a CodeCommit repository and an EC2 instance role we will reference in the other stack. The idea is that this stack holds all of the (mostly free) infrastructure we need to run the job, while the second ephemeral stack holds the expensive resources used for the job itself.
+First, fork this repository and clone it to your local machine. Stand up the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template in a browser using the AWS Console. This creates an IAM user with admin powers, an ECR respository, an Elastic IP, a CodeCommit repository and an EC2 instance role we will reference in the other stack. The idea is that this stack holds all of the (mostly free) infrastructure we need to run the job, while the second ephemeral stack holds the expensive resources used for the job itself.
 
 Once this CFN template has been succesfully created, go into the 'outputs' tab and make a note of the 'ProjectRepoAddress' field. This is the http address of the CodeCommit repository created by the template, which we will need later.
 
