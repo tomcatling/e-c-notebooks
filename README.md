@@ -9,7 +9,7 @@ This repository is a recipe for setting up a Docker stack with JupyterLab for lo
 
 Some manual work is required to set up this workflow. The instructions here assume you are starting from scratch in AWS with a root account that currently has no resources. You will need a basic understanding of terminal usage, Git and Bash. Many things will probably require tweaking to work on a Windows machine. If you make any improvements please submit a pull request!
 
-![outline image](./outline.svg)
+![outline image](./docs/outline.svg)
 
 # Setup
 
