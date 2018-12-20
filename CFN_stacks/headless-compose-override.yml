@@ -1,0 +1,2 @@
+jupyterlab:
+  entrypoint: papermill /home/jovyan/repo/${NB_PATH} s3://tomcat-job-outputs/output.ipynb
