@@ -10,6 +10,10 @@
   {
   	"ParameterKey": "SSHLocation",
   	"ParameterValue": "46.208.238.80/32"
+  },
+  {
+    "ParameterKey": "Timeout",
+    "ParameterValue": "10"
   }
 ]
 

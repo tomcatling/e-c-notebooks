@@ -12,6 +12,9 @@ Parameters:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  Timeout:
+    Description: Timeout length for the instance in minutes
+    Type: String
   NotebookJobPath:
     Description: Repository path of the notebook job you want to run.
     Type: String
@@ -49,6 +52,7 @@ Resources:
         Fn::Base64: !Sub 
             - |
               #!/bin/bash
+              at now +${Timeout} minutes -f aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
               nbpath=$(echo ${NotebookJobPath} | sed 's/#/ /g')
               image=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
               yum update -y

@@ -10,24 +10,32 @@ Description: >-
   Note that you will need to specify the CAPABILITY_IAM flag when you 
   create the stack to allow this template to execute.
 Parameters:
-  RepositoryName:
+  ECRRepositoryName:
     Description: Name of the codecommit and ECR repos for this project
-    Default: data-science-stack-repo
+    Default: data-science-stack-ecr-repo
+    Type: String
+  CodeCommitRepositoryName:
+    Description: Name of the codecommit and ECR repos for this project
+    Default: data-science-stack-cc-repo
     Type: String
   S3BucketName:
     Description: Name of the S3 bucket which will hold job outputs
     Default: data-science-stack-outputs
+    Type: String
+  ImageTag:
+    Description: Tag for the docker image
+    Default: data-science-image
     Type: String
 Resources:
   CodeCommitRepo:
     Type: AWS::CodeCommit::Repository
     Properties: 
       RepositoryDescription: Repo to allow EC2 access to the DataScienceStack environment.
-      RepositoryName: !Ref RepositoryName
+      RepositoryName: !Ref CodeCommitRepositoryName
   InstanceECR:
     Type: AWS::ECR::Repository
     Properties: 
-      RepositoryName: !Ref RepositoryName
+      RepositoryName: !Ref ECRRepositoryName
   ListS3BucketsInstanceProfile:
     Type: 'AWS::IAM::InstanceProfile'
     Properties:
@@ -84,3 +92,7 @@ Outputs:
     Value: !GetAtt CodeCommitRepo.CloneUrlHttp
     Export:
       Name: "CodeCommitAddress"
+  ImageTag:
+    Value: !Ref ImageTag
+    Export:
+      Name: "ImageTag"

@@ -12,10 +12,6 @@ Parameters:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
-  ImageTag:
-    Description: Tag for the image created by the stack
-    Default: data-science-stack
-    Type: String
   CodeCommitRepoName:
     Description: Name of the CodeCommit repository created for this stack.
     Default: data-science-stack
@@ -61,8 +57,7 @@ Resources:
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
               docker pull ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
               IMAGE_TAG=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} docker-compose up
-            - CodeCommitRepo:
-               Fn::ImportValue: 'CodeCommitAddress'
+            - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', ImageTag: !ImportValue 'ImageTag' }
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
