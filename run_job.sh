@@ -38,8 +38,6 @@ param_string = str(['{}={}'.format(k,pair[k]) for pair in param_list for k in ['
 param_string = param_string.replace('\'','').lstrip('[').rstrip(']').replace(', ParameterKey',' ParameterKey').replace(' ParameterValue','ParameterValue');\
 print(param_string)")
 
-echo $params
-
 aws cloudformation create-stack --stack-name ${stackname} \
 --template-body file://CFN_stacks/job-stack.yaml --parameters $params
 
@@ -55,7 +53,7 @@ echo "...job is running at: ${public_ip}"
 # get bucket name
 bucket=$(echo $stack_outputs | python -c "import sys, json; \
 exports=json.load(sys.stdin)['Exports'];\
-export_str=str([i['Value'] for i in exports if i.get('Name')=='${stackname}::S3BucketName']);\
+export_str=str([i['Value'] for i in exports if i.get('Name')=='S3BucketName']);\
 print(export_str.replace('\'','').lstrip('[').rstrip(']'))")
 
 echo "Output will be placed in S3://${bucket}/${IPYNB_FILE}/${stackname}.ipynb"
