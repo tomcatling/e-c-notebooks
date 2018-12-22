@@ -10,7 +10,7 @@ This repository is a recipe for setting up a Docker stack with JupyterLab for lo
 * your environment is consistent
 * CloudFormation allows tight control of your AWS resources
 
-Some manual work is required to set up this workflow. You will need a basic understanding AWS services, terminal usage and Git. Many things will probably require tweaking to work on a Windows machine. If you make any improvements please submit a pull request!
+Some manual work is required to set up this workflow. You will need a basic understanding AWS services, terminal usage and git. Many things will probably require tweaking to work on a Windows machine. If you make any improvements please submit a pull request!
 
 # Setup
 
@@ -48,6 +48,15 @@ You are now ready to apply the infrastructure CloudFormation stack. This stack c
 
 Note that if you are working on a Mac you will need to follow [these](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-https-unixes.html#setting-up-https-unixes-credential-helper) additional steps to stop your Keychain from storing the temporary password which the codecommit credential-helper provides to Git.
 
+## Ephemeral Stack Parameters
+
+Now you can set up the parameters in `CFN_stacks/stack-config.json`. Here you must specify:
+
+* KeyName : the name of the EC2 keypair you will use to SSH into the instances
+* InstanceType : the type of instance you want to use, e.g. t2.large
+* SSHLocation : **your** ip address in CIDR notation, which is the only one which will be allowed through the EC2 security group, e.g. 192.208.238.80/32
+* Timeout : a timeout in minutes for the ephemeral stack
+
 Now build the image we'll be using:
 
 ```bash
@@ -64,14 +73,31 @@ For local development:
 ./run_local_server.sh
 ```
 
-For remote development (remember to add your changes to the repository somehow):
+After creating a notebook locally you need to add it into the repository.
+
+```bash
+git add my-new-notebook
+git commit -m 'a description of what it does'
+git push origin master
+git push codecommit master
+```
+
+For remote development:
 ```bash
 ./run_remote_server.sh
 ```
 
-For running a job and pushing the output to S3:
+Remember that notebooks which you develop remotely do not exist in the repository until you add them!
+
+For running a job remotely from your local machine:
 ```bash
 ./run_job relative-path-to-notebook
+```
+
+Again, remember that the remote instance only has access to what is in the codecommit repository. Be sure to add any changes:
+
+```bash
+git add <changed file>; git commit -m 'description of change'; git push codecommit master; git push origin master
 ```
 
 # Connecting to an Instance
