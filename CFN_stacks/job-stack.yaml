@@ -53,8 +53,6 @@ Resources:
             - |
               #!/bin/bash
               at now +${Timeout} minutes -f aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
-              nbpath=$(echo ${NotebookJobPath} | sed 's/#/ /g')
-              image=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
               yum update -y
               amazon-linux-extras install docker
               usermod -a -G docker ec2-user
@@ -68,10 +66,11 @@ Resources:
               cd /home/ec2-user/ && mkdir repo && cd repo
               git clone ${CodeCommitRepo} .
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
-              docker pull ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
-              NB_PATH="$nbpath" IMAGE_TAG=$image S3_BUCKET=${S3BucketName} STACK_NAME=${AWS::StackName} docker-compose -f docker-compose.yaml -f CFN_stacks/headless-compose-override.yaml up --exit-code-from jupyterlab --no-color
+              docker pull ${ImageTag}
+              nbpath=$(echo ${NotebookJobPath} | sed 's/#/ /g')
+              NB_PATH="$nbpath" IMAGE_TAG=${ImageTag} S3_BUCKET=${S3BucketName} STACK_NAME=${AWS::StackName} docker-compose -f docker-compose.yaml -f CFN_stacks/headless-compose-override.yaml up --exit-code-from jupyterlab --no-color
               aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
-            - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', S3BucketName: !ImportValue 'S3BucketName' }
+            - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', S3BucketName: !ImportValue 'S3BucketName' , ImageTag: !ImportValue 'ImageTagExport' }
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:

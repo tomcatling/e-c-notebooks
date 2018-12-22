@@ -59,9 +59,9 @@ Resources:
               cd /home/ec2-user/ && mkdir repo && cd repo
               git clone ${CodeCommitRepo} .
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
-              docker pull ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
-              IMAGE_TAG=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} docker-compose up
-            - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', ImageTag: !ImportValue 'ImageTag' }
+              docker pull ${ImageTag}
+              IMAGE_TAG=${ImageTag} docker-compose up
+            - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', ImageTag: !ImportValue 'ImageTagExport' }
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
