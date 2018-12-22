@@ -93,6 +93,6 @@ Outputs:
     Export:
       Name: "CodeCommitAddress"
   ImageTag:
-    Value: !Ref ImageTag
+    Value: !Join [ "", [ !Ref "AWS::AccountId", ".dkr.ecr.", !Ref "AWS::Region", ".amazonaws.com/", !Ref "ImageTag" ] ]
     Export:
-      Name: "ImageTag"
+      Name: "ImageTagExport"

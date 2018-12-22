@@ -16,6 +16,9 @@ Parameters:
     Description: Name of the CodeCommit repository created for this stack.
     Default: data-science-stack
     Type: String
+  Timeout:
+    Description: Length of the timeout in minutes
+    Type: String
   InstanceType:
     Description: WebServer EC2 instance type
     Type: String
@@ -42,6 +45,7 @@ Resources:
         Fn::Base64: !Sub 
             - |
               #!/bin/bash
+              at now +${Timeout} minutes -f aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
               yum update -y
               amazon-linux-extras install docker
               usermod -a -G docker ec2-user
@@ -55,10 +59,10 @@ Resources:
               cd /home/ec2-user/ && mkdir repo && cd repo
               git clone ${CodeCommitRepo} .
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
-              docker build -t ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} ./docker
-              docker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
+              docker build -t ${ImageTag} ./docker
+              docker push ${ImageTag}
               aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
-            - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', ImageTag: !ImportValue 'ImageTag' }
+            - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', ImageTag: !ImportValue 'ImageTagExport' }
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
