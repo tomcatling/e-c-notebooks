@@ -50,7 +50,6 @@ Resources:
             - |
               #!/bin/bash
               nbpath=$(echo ${NotebookJobPath} | sed 's/#/ /g')
-              echo "$nbpath"
               image=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
               yum update -y
               amazon-linux-extras install docker
