@@ -75,7 +75,7 @@ Outputs:
   S3BucketName:
     Value: !Ref S3BucketName
     Export:
-      Name: "S3Bucketname"
+      Name: "S3BucketName"
   CodeCommitAddress:
     Value: !GetAtt CodeCommitRepo.CloneUrlHttp
     Export:

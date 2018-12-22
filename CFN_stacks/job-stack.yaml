@@ -63,8 +63,8 @@ Resources:
               git clone ${CodeCommitRepo} .
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
               docker pull ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
-              NB_PATH=${NotebookJobPath} IMAGE_TAG=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} S3BucketName=${S3BucketName} docker-compose -f docker-compose.yaml -f CFN_stacks/headless-compose-override.yaml up --exit-code-from jupyterlab --no-color
-            - { CodeCommitRepo: Fn::ImportValue: 'CodeCommitAddress', S3BucketName: Fn::ImportValue: 'S3BucketName'} 
+              NB_PATH=${NotebookJobPath} IMAGE_TAG=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} S3_BUCKET=${S3BucketName} STACK_NAME=${AWS::StackName} docker-compose -f docker-compose.yaml -f CFN_stacks/headless-compose-override.yaml up --exit-code-from jupyterlab --no-color
+            - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', S3BucketName: !ImportValue 'S3BucketName' }
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -87,3 +87,5 @@ Outputs:
   PublicIP:
     Description: Public IP address of the newly created EC2 instance
     Value: !GetAtt [EC2Instance, PublicIp]
+    Export:
+      Name: !Sub "${AWS::StackName}::JobPublicIp"

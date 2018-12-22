@@ -9,11 +9,7 @@
   },
   {
   	"ParameterKey": "SSHLocation",
-  	"ParameterValue": "89.36.64.36/32"
-  },
-  {
-    "ParameterKey": "TTL",
-    "ParameterValue": "300"
+  	"ParameterValue": "46.208.238.80/32"
   }
 ]
 

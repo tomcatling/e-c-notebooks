@@ -4,6 +4,12 @@ aws cloudformation create-stack --stack-name builder --template-body file://CFN_
 
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name builder
-stack_outputs=$(aws cloudformation get-stack --stack-name builder)
-public_ip=$(echo $stack_outputs | python -c "import sys, json; print(json.load(sys.stdin)['Outputs']['PublicIP'])")
-echo "...job is running at: ${public_ip}."
+
+
+stack_outputs=$(aws cloudformation list-exports)
+public_ip=$(echo $stack_outputs | python -c "import sys, json; \
+exports=json.load(sys.stdin)['Exports'];\
+export_str=str([i['Value'] for i in exports if i.get('Name')=='BuildPublicIp']);\
+print(export_str.replace('\'','').lstrip('[').rstrip(']'))")
+
+echo "...build is running at: ${public_ip}"

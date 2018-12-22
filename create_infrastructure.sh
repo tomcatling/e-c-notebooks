@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Creating infrastructure stack..."
+
 aws cloudformation create-stack --stack-name infrastructure --template-body file://CFN_stacks/infrastructure-stack.yaml --capabilities CAPABILITY_IAM
 
 echo "Waiting for stack creation to finish. This will take a few minutes..."
