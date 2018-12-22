@@ -42,10 +42,10 @@ aws cloudformation create-stack --stack-name ${stackname} \
 --template-body file://CFN_stacks/job-stack.yaml --parameters $params
 
 echo "Waiting for stack creation to finish..."
-aws cloudformation wait stack-create-complete --stack-name ${stackname}
+aws cloudformation wait stack-create-complete --stack-name $stackname
 
 
-public_ip=$(CFN_stacks/get_stack_export.sh ${stackname}::JobPublicIp)  
+public_ip=$(CFN_stacks/get_stack_export.sh $stackname::JobPublicIp)  
 bucket=$(CFN_stacks/get_stack_export.sh S3BucketName)  
 
 echo "...job is running at: ${public_ip}"
