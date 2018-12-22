@@ -1,6 +1,7 @@
---- Work in Progress ---
+------------------------
 
-** Feel free to use this but be aware that the instance role created by the infrastructure stack is currently very permissive **
+**Work in Progress**
+**The instance role created by the infrastructure stack is currently very permissive.**
 
 ------------------------
 
