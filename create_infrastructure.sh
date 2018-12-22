@@ -1,11 +1,12 @@
 #!/bin/bash
+set -eo pipefail
 
 echo "Creating infrastructure stack..."
 
-#aws cloudformation create-stack --stack-name infrastructure2 --template-body file://CFN_stacks/infrastructure-stack.yaml --capabilities CAPABILITY_IAM
+aws cloudformation create-stack --stack-name infrastructure --template-body file://CFN_stacks/infrastructure-stack.yaml --capabilities CAPABILITY_IAM
 
 echo "Waiting for stack creation to finish. This will take a few minutes..."
-#aws cloudformation wait stack-create-complete --stack-name infrastructure2
+aws cloudformation wait stack-create-complete --stack-name infrastructure
 
 git_addr=$(cat .git/config | grep url | awk -F '=' '{print $2}' | head -n 1)
 

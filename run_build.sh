@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eo pipefail
 
 aws cloudformation create-stack --stack-name builder --template-body file://CFN_stacks/build-stack.yaml --parameters file://CFN_stacks/stack-config.json
 
@@ -12,4 +13,4 @@ exports=json.load(sys.stdin)['Exports'];\
 export_str=str([i['Value'] for i in exports if i.get('Name')=='BuildPublicIp']);\
 print(export_str.replace('\'','').lstrip('[').rstrip(']'))")
 
-echo "...build is running at: ${public_ip}"
+echo "...builder is running at: ${public_ip}"
