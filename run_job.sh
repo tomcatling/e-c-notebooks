@@ -33,14 +33,15 @@ stackname=headless-job-$(date "+%Y%m%d%H%M%S")
 params=$(cat CFN_stacks/stack-config.json | python -c "\
 import sys, json;\
 param_list=json.load(sys.stdin);\
-param_list.append({'ParameterKey': 'NotebookJobPath', 'ParameterValue': '${IPYNB_FILE}'});\
+param_list.append({'ParameterKey': 'NotebookJobPath', 'ParameterValue': '${IPYNB_FILE}'.replace(' ','#')});\
 param_string = str(['{}={}'.format(k,pair[k]) for pair in param_list for k in ['ParameterKey','ParameterValue']]);\
-param_string = param_string.replace('\'','').replace(' ','').lstrip('[').rstrip(']').replace(',ParameterKey',' ParameterKey');\
+param_string = param_string.replace('\'','').lstrip('[').rstrip(']').replace(', ParameterKey',' ParameterKey').replace(' ParameterValue','ParameterValue');\
 print(param_string)")
 
+echo $params
 
 aws cloudformation create-stack --stack-name ${stackname} \
---template-body file://CFN_stacks/job-stack.yaml --parameters ${params}
+--template-body file://CFN_stacks/job-stack.yaml --parameters $params
 
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name ${stackname}
