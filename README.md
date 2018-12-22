@@ -1,3 +1,6 @@
+--- Work in Progress ---
+
+
 # Outline
 
 This repository is a recipe for setting up a Docker stack with JupyterLab for local development, with some helpful scripts and CloudFormation templates which allow you to execute a Jupyter notebook *in the same enviroment* on an EC2 instance. The instance is associated with an ephemeral stack which will tear itself down after the job completes (or if it times out). There are many advantages to working in this way:
@@ -8,8 +11,6 @@ This repository is a recipe for setting up a Docker stack with JupyterLab for lo
 * CloudFormation allows tight control of your AWS resources
 
 Some manual work is required to set up this workflow. You will need a basic understanding AWS services, terminal usage and Git. Many things will probably require tweaking to work on a Windows machine. If you make any improvements please submit a pull request!
-
-![outline image](./docs/outline.svg)
 
 # Setup
 
