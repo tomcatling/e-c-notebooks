@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "TTL",
-    "ParameterValue": 300
+    "ParameterValue": "300"
   }
 ]
 

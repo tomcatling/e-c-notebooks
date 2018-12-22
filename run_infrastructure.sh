@@ -1,29 +1,29 @@
 #!/bin/bash
 
-aws cloudformation create-stack --stack-name infrastructure --template-body file://CFN_stacks/infrastructure-stack.yaml --parameters file://CFN_stacks/stack-config.json
+aws cloudformation create-stack --stack-name infrastructure --template-body file://CFN_stacks/infrastructure-stack.yaml --capabilities CAPABILITY_IAM
 
-echo "Waiting for stack creation to finish..."
+echo "Waiting for stack creation to finish. This will take a few minutes..."
 aws cloudformation wait stack-create-complete --stack-name infrastructure
 
 git_addr=$(cat .git/config | grep url | awk -F '=' '{print $2}' | head -n 1)
 
-stack_outputs=$(aws cloudformation get-stack --stack-name infrastructure)
-cc_addr=$(echo $stack_outputs | python -c "import sys, json; print(json.load(sys.stdin)['Outputs']['CodeCommitAddress'])")
+stack_outputs=$(aws cloudformation list-exports)
+cc_addr=$(echo $stack_outputs | python -c "import sys, json; \
+exports=json.load(sys.stdin)['Exports'];\
+export_str=str([i['Value'] for i in exports if i.get('Name')=='CodeCommitAddress']);\
+print(export_str.replace('\'','').lstrip('[').rstrip(']'))")
 
-echo "Adding CodeCommit as a push destination for origin..."
-echo ${cc_addr}
+
+echo "Adding a remote called codecommit..."
+echo "git remote add codecommit ${cc_addr}"
+git remote add codecommit ${cc_addr}
 
 git config --global credential.helper '!aws codecommit credential-helper $@'
 git config --global credential.UseHttpPath true
 
-git remote remove origin
-git remote add origin ${git_addr}
-git remote set-url --add --push origin ${git_addr}
-git remote set-url --add --push origin ${cc_addr}
-
 echo "Initial push..."
-
-git push origin master
+echo "git push codecommit master"
+git push codecommit master
 
 echo "...Done."
 

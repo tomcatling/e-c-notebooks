@@ -11,8 +11,8 @@ Description: >-
   create the stack to allow this template to execute.
 Parameters:
   RepositoryName:
-    Description: Name of the codecommit repo for this project
-    Default: data-science-stack
+    Description: Name of the codecommit and ECR repos for this project
+    Default: data-science-stack-repo
     Type: String
   S3BucketName:
     Description: Name of the S3 bucket which will hold job outputs
@@ -23,7 +23,7 @@ Resources:
     Type: AWS::CodeCommit::Repository
     Properties: 
       RepositoryDescription: Repo to allow EC2 access to the DataScienceStack environment.
-      RepositoryName: data-science-stack
+      RepositoryName: !Ref RepositoryName
   InstanceECR:
     Type: AWS::ECR::Repository
     Properties: 
