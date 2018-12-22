@@ -33,7 +33,7 @@ stackname=headless-job-$(date "+%Y%m%d%H%M%S")
 params=$(cat CFN_stacks/stack-config.json | python -c "\
 import sys, json;\
 param_list=json.load(sys.stdin);\
-param_list.append({'ParameterKey': 'NotebookJobPath', 'ParameterValue': '${IPYNB_FILE%.ipynb}'});\
+param_list.append({'ParameterKey': 'NotebookJobPath', 'ParameterValue': '${IPYNB_FILE}'});\
 param_string = str(['{}={}'.format(k,pair[k]) for pair in param_list for k in ['ParameterKey','ParameterValue']]);\
 param_string = param_string.replace('\'','').replace(' ','').lstrip('[').rstrip(']').replace(',ParameterKey',' ParameterKey');\
 print(param_string)")
@@ -57,4 +57,4 @@ exports=json.load(sys.stdin)['Exports'];\
 export_str=str([i['Value'] for i in exports if i.get('Name')=='${stackname}::S3BucketName']);\
 print(export_str.replace('\'','').lstrip('[').rstrip(']'))")
 
-echo "Output will be placed in S3://${bucket}/${IPYNB_FILE%.ipynb}/${stackname}.ipynb"
+echo "Output will be placed in S3://${bucket}/${IPYNB_FILE}/${stackname}.ipynb"
