@@ -45,6 +45,11 @@ Resources:
               - 's3:*'
               - 'codecommit:*'
               - 'ecr:*'
+              - 'ec2:*'
+            Resource: '*'
+          - Effect: Allow
+            Action:
+            - 'cloudformation:DeleteStack'
             Resource: '*'
       Roles:
         - !Ref ListS3BucketsRole
