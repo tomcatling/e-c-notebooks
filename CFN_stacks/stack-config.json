@@ -12,8 +12,8 @@
   	"ParameterValue": "89.36.64.36/32"
   },
   {
-    "ParameterKey": "NotebookJobPath",
-    "ParameterValue": "notebooks/example.ipynb"
+    "ParameterKey": "TTL",
+    "ParameterValue": 300
   }
 ]
 

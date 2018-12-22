@@ -7,7 +7,7 @@ This repository is a recipe for setting up a Docker stack with JupyterLab for lo
 * your environment is consistent
 * CloudFormation allows tight control of your AWS resources
 
-Some manual work is required to set up this workflow. The instructions here assume you are starting from scratch in AWS with a root account that currently has no resources. You will need a basic understanding of terminal usage, Git and Bash. Many things will probably require tweaking to work on a Windows machine. If you make any improvements please submit a pull request!
+Some manual work is required to set up this workflow. You will need a basic understanding AWS services, terminal usage and Git. Many things will probably require tweaking to work on a Windows machine. If you make any improvements please submit a pull request!
 
 ![outline image](./docs/outline.svg)
 
@@ -15,17 +15,26 @@ Some manual work is required to set up this workflow. The instructions here assu
 
 **You run these templates entirely at your own risk, and must accept responsibility for costs incurred by doing so!**
 
-First, fork this repository and clone it to your local machine. Stand up the `CFN-IAMAdmin-EIP-InstanceRole.yaml` template in a browser using the AWS Console. This creates an IAM user with admin powers, an ECR respository, an Elastic IP, a CodeCommit repository and an EC2 instance role we will reference in the other stack. The idea is that this stack holds all of the (mostly free) infrastructure we need to run the job, while the second ephemeral stack holds the expensive resources used for the job itself.
+First, you will need an access key for an IAM user with admin powers. Specifically, this user needs permissions to:
 
-Once this CFN template has been succesfully created, go into the 'outputs' tab and make a note of the 'ProjectRepoAddress' field. This is the http address of the CodeCommit repository created by the template, which we will need later.
+* something
+* something else
 
-You also need to go into the EC2 Console and create an SSH keypair, making a note of the name you choose. You will be prompted to download the private key for this pair - do so, then move it to a sensible place and protect it. For example:
+You will also need to create an EC2 keypair and download the private key to your local machine. Once the key is downloaded, move it somewhere sensible and protect it:
 
 ```bash
 mv ~/Downloads/aws-ec2.pem ~/.ssh/aws-ec2.pem && chmod 600 ~/.ssh/aws-ec2.pem
 ```
 
-We will use this later to connect to our instances.
+We will use this later to connect to our instances. Next, fork this repository and clone it to your local machine. 
+
+You are now ready to apply the infrastructure CloudFormation stack. This stack creates resources which will be used by our remote jobs, specifically:
+
+* An instance role to define the permissions given to the EC2 instance
+* An S3 bucket to hold the output of the jobs
+* An ECR repository to hold our environment image
+* A CodeCommit repository which will mirror your local Git repository.
+
 
 Finally, go into the IAM Console and create a fresh access key for your new IAM user. 
 
@@ -34,7 +43,7 @@ Finally, go into the IAM Console and create a fresh access key for your new IAM 
 Configure your local `awscli` to use this access key ID and secret key:
 
 ```bash
-aws configure --profile DataScienceStack
+aws configure
 ```
 
 The key would now be associated with a profile called `DataScienceStack`. If this clashes with your existing configuration then you should change this name to something else. You will also be prompted for region and output format during the configuration. This guide was written with `eu-west-2` (London), and `json` in mind. Make sure that you are consistent with your region choice in the Console (upper right corner) when looking at resources online. 
@@ -42,7 +51,7 @@ The key would now be associated with a profile called `DataScienceStack`. If thi
 Now tell your local Git installation to use the AWS CodeCommit credential-helper:
 
 ```bash
-git config --global credential.helper '!aws codecommit --profile DataScienceStack credential-helper $@'
+git config --global credential.helper '!aws codecommit credential-helper $@'
 ```
 ```bash
 git config --global credential.UseHttpPath true
@@ -103,7 +112,7 @@ This givs you the standard output created by the script (CloudFormation User Dat
 Assuming the build went smoothly, we can now use this setup to run arbitrary notebooks from within the reopsitory! Let's finish by runnings the example notebook from this repository:
 
 ```bash
-aws cloudformation --profile DataScienceStack create-stack --stack-name EC2Test --template-body file://CFN-EC2-JupyterLab.yaml --parameters file://CFNParams-EC2-JupyterLab.json`
+aws cloudformation create-stack --stack-name EC2Test --template-body file://CFN-EC2-JupyterLab.yaml --parameters file://CFNParams-EC2-JupyterLab.json`
 ```
 
 You should see the output of this job in S3.

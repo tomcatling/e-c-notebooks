@@ -14,6 +14,10 @@ Parameters:
     Description: Name of the codecommit repo for this project
     Default: data-science-stack
     Type: String
+  S3BucketName:
+    Description: Name of the S3 bucket which will hold job outputs
+    Default: data-science-stack-outputs
+    Type: String
 Resources:
   CodeCommitRepo:
     Type: AWS::CodeCommit::Repository
@@ -24,53 +28,6 @@ Resources:
     Type: AWS::ECR::Repository
     Properties: 
       RepositoryName: !Ref RepositoryName
-  CFNUser:
-    Type: 'AWS::IAM::User'
-  CFNUserGroup:
-    Type: 'AWS::IAM::Group'
-  CFNAdminGroup:
-    Type: 'AWS::IAM::Group'
-  Users:
-    Type: 'AWS::IAM::UserToGroupAddition'
-    Properties:
-      GroupName: !Ref CFNUserGroup
-      Users:
-        - !Ref CFNUser
-  CFNAdmins:
-    Type: 'AWS::IAM::UserToGroupAddition'
-    Properties:
-      GroupName: !Ref CFNAdminGroup
-      Users:
-        - !Ref CFNUser
-  CFNUserPolicies:
-    Type: 'AWS::IAM::Policy'
-    Properties:
-      PolicyName: CFNUsers
-      PolicyDocument:
-        Statement:
-          - Effect: Allow
-            Action:
-              - 'cloudformation:Describe*'
-              - 'cloudformation:List*'
-              - 'cloudformation:Get*'
-            Resource: '*'
-      Groups:
-        - !Ref CFNUserGroup
-  CFNAdminPolicies:
-    Type: 'AWS::IAM::Policy'
-    Properties:
-      PolicyName: CFNAdmins
-      PolicyDocument:
-        Statement:
-          - Effect: Allow
-            Action: '*'
-            Resource: '*'
-      Groups:
-        - !Ref CFNAdminGroup
-  CFNKeys:
-    Type: 'AWS::IAM::AccessKey'
-    Properties:
-      UserName: !Ref CFNUser
   ListS3BucketsInstanceProfile:
     Type: 'AWS::IAM::InstanceProfile'
     Properties:
@@ -108,25 +65,18 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       AccessControl: PublicRead
-      BucketName: tomcat-job-outputs
-      WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: error.html
+      BucketName: !Ref S3BucketName
     DeletionPolicy: Delete
 Outputs:
   InstanceRole:
     Value: !Ref ListS3BucketsInstanceProfile
     Export:
       Name: "InstanceProfile::S3Access"
+  S3BucketName:
+    Value: !Ref S3BucketName
+    Export:
+      Name: "S3Bucketname"
   CodeCommitAddress:
     Value: !GetAtt CodeCommitRepo.CloneUrlHttp
     Export:
       Name: "CodeCommitAddress"
-  AccessKey:
-    Value: !Ref CFNKeys
-    Description: AWSAccessKeyId of new user
-  SecretKey:
-    Value: !GetAtt 
-      - CFNKeys
-      - SecretAccessKey
-    Description: AWSSecretKey of new user

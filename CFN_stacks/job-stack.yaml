@@ -63,9 +63,8 @@ Resources:
               git clone ${CodeCommitRepo} .
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
               docker pull ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag}
-              cd CFN_stacks && jobfile=${NotebookJobPath} sh run_notebook_job.sh ${NotebookJobPath} ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} 
-            - CodeCommitRepo:
-               Fn::ImportValue: 'CodeCommitAddress'
+              NB_PATH=${NotebookJobPath} IMAGE_TAG=${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageTag} S3BucketName=${S3BucketName} docker-compose -f docker-compose.yaml -f CFN_stacks/headless-compose-override.yaml up --exit-code-from jupyterlab --no-color
+            - { CodeCommitRepo: Fn::ImportValue: 'CodeCommitAddress', S3BucketName: Fn::ImportValue: 'S3BucketName'} 
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
