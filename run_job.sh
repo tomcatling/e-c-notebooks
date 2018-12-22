@@ -19,11 +19,11 @@ fail_exit() {
   exit 1
 }
 
-if [ -z '${IPYNB_FILE}' ]; then
+if [ -z "${IPYNB_FILE}" ]; then
 	fail_exit "Notebook file not specified"
 fi
 
-if [ ! -f '${IPYNB_FILE}' ]; then
+if [ ! -f "${IPYNB_FILE}" ]; then
     fail_exit "File: ${IPYNB_FILE} - does not exist"
 fi
 

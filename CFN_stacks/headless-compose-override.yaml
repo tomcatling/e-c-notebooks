@@ -1,2 +1,2 @@
 jupyterlab:
-  entrypoint: papermill /home/jovyan/${NB_PATH} s3://${S3_BUCKET}/${NB_PATH}/${STACK_NAME}.ipynb
+  entrypoint: papermill "/home/jovyan/${NB_PATH}" "s3://${S3_BUCKET}/${NB_PATH}/${STACK_NAME}.ipynb"
