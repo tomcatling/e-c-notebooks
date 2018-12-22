@@ -51,4 +51,10 @@ export_str=str([i['Value'] for i in exports if i.get('Name')=='${stackname}::Job
 print(export_str.replace('\'','').lstrip('[').rstrip(']'))")
 echo "...job is running at: ${public_ip}"
 
+# get bucket name
+bucket=$(echo $stack_outputs | python -c "import sys, json; \
+exports=json.load(sys.stdin)['Exports'];\
+export_str=str([i['Value'] for i in exports if i.get('Name')=='${stackname}::S3BucketName']);\
+print(export_str.replace('\'','').lstrip('[').rstrip(']'))")
 
+echo "Output will be placed in S3://${bucket}/${IPYNB_FILE%.ipynb}/${stackname}.ipynb"
