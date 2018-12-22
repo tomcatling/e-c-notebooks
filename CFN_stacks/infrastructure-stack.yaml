@@ -22,10 +22,6 @@ Parameters:
     Description: Name of the S3 bucket which will hold job outputs
     Default: data-science-stack-outputs
     Type: String
-  ImageTag:
-    Description: Tag for the docker image
-    Default: data-science-image
-    Type: String
 Resources:
   CodeCommitRepo:
     Type: AWS::CodeCommit::Repository
@@ -93,6 +89,6 @@ Outputs:
     Export:
       Name: "CodeCommitAddress"
   ImageTag:
-    Value: !Join [ "", [ !Ref "AWS::AccountId", ".dkr.ecr.", !Ref "AWS::Region", ".amazonaws.com/", !Ref "ImageTag" ] ]
+    Value: !Join [ "", [ !Ref "AWS::AccountId", ".dkr.ecr.", !Ref "AWS::Region", ".amazonaws.com/", !Ref "ECRRepositoryName" ] ]
     Export:
       Name: "ImageTagExport"
