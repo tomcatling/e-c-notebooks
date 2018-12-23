@@ -69,6 +69,8 @@ Now build the image we'll be using:
 ./run_build
 ```
 
+You must run this build script again whenever you make changes to the docker image which you want the remote environment to see - for example adding a package.
+
 # Usage
 
 Now you're ready to use the environment.
@@ -93,7 +95,7 @@ For remote development:
 ./run_remote_server.sh
 ```
 
-Remember that notebooks which you develop remotely do not exist in the repository until you add them!
+Remember that notebooks which you develop remotely do not exist in the repository unless you add them. Adding them from the remote machine is more difficult because the `notebooks` directory is not set up as a git repository. 
 
 For running a job remotely from your local machine:
 ```bash
