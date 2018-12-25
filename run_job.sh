@@ -44,9 +44,11 @@ aws cloudformation create-stack --stack-name ${stackname} \
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name $stackname
 
+public_ip=$(aws cloudformation describe-stacks --stack-name $stackname --query \
+"Stacks[0].Outputs[?OutputKey=='$stackname::JobPublicIp'].OutputValue" --output text)
 
-public_ip=$(CFN_stacks/get_stack_export.sh $stackname::JobPublicIp)  
-bucket=$(CFN_stacks/get_stack_export.sh S3BucketName)  
+bucket=$(aws cloudformation describe-stacks --stack-name $stackname --query \
+"Stacks[0].Outputs[?OutputKey=='S3BucketName'].OutputValue" --output text)
 
 echo "...job is running at: ${public_ip}"
 echo "Output will be placed in S3://${bucket}/${IPYNB_FILE}/${stackname}.ipynb"

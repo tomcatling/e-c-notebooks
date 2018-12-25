@@ -5,7 +5,7 @@ aws cloudformation create-stack --stack-name jupyterlab --template-body file://C
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name jupyterlab
 
-public_ip=$(CFN_stacks/get_stack_export.sh ServerPublicIp)  
-
+public_ip=$(aws cloudformation describe-stacks --stack-name jupyterlab --query \
+"Stacks[0].Outputs[?OutputKey=='ServerPublicIp'].OutputValue" --output text)
 
 echo "...server is running at: ${public_ip}:8888"
