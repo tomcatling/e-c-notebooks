@@ -1,7 +1,7 @@
 #!/bin/bash
 
 aws cloudformation create-stack --stack-name jupyterlab \
---template-body file://CFN_stacks/server-stack.yaml --parameters $(cat CFN_stacks/config)
+--template-body file://cloudformation/server-stack.yaml --parameters $(cat cloudformation/config)
 
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name jupyterlab

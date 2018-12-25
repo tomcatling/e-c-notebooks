@@ -56,7 +56,7 @@ Note that if you are working on a Mac you will need to follow [these](https://do
 
 ## Ephemeral Stack Parameters
 
-Now you can set up the parameters in `CFN_stacks/stack-config.json`. Here you must specify:
+Now you can set up the parameters in `cloudformation/stack-config.json`. Here you must specify:
 
 * KeyName : the name of the EC2 keypair you will use to SSH into the instances
 * InstanceType : the type of instance you want to use, e.g. t2.large

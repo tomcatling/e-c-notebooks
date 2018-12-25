@@ -4,7 +4,7 @@ set -eo pipefail
 echo "Attemping to create infrastructure stack..."
 
 aws cloudformation create-stack --stack-name infrastructure \
---template-body file://CFN_stacks/infrastructure-stack.yaml \
+--template-body file://cloudformation/infrastructure-stack.yaml \
 --capabilities CAPABILITY_IAM
 
 echo "Waiting for stack creation to finish..."

@@ -32,8 +32,8 @@ stackname=headless-job-$(date "+%Y%m%d%H%M%S")
 # Add in the notebook path as an additional parameter.
 # Replace spaces with #, can't seem to pass them in otherwise
 aws cloudformation create-stack --stack-name $stackname \
---template-body file://CFN_stacks/job-stack.yaml \
---parameters $(cat CFN_stacks/config) ParameterKey=NotebookJobPath,ParameterValue=${IPYNB_FILE// /#} 
+--template-body file://cloudformation/job-stack.yaml \
+--parameters $(cat cloudformation/config) ParameterKey=NotebookJobPath,ParameterValue=${IPYNB_FILE// /#} 
 
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name $stackname
