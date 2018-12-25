@@ -4,4 +4,3 @@ c.NotebookApp.allow_origin = '*'
 c.NotebookApp.open_browser = False
 c.NotebookApp.port = 8888
 c.NotebookApp.allow_root = True
-

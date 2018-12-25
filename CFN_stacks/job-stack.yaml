@@ -68,7 +68,7 @@ Resources:
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
               docker pull ${ImageTag}
               nbpath=$(echo ${NotebookJobPath} | sed 's/#/ /g')
-              NB_PATH="$nbpath" IMAGE_TAG=${ImageTag} S3_BUCKET=${S3BucketName} STACK_NAME=${AWS::StackName} docker-compose -f docker-compose.yaml -f CFN_stacks/headless-compose-override.yaml up --exit-code-from jupyterlab --no-color
+              NB_PATH="$nbpath" IMAGE_TAG=${ImageTag} S3_BUCKET=${S3BucketName} STACK_NAME=${AWS::StackName} docker-compose -f docker/docker-compose.yaml -f docker/headless-compose-override.yaml up --exit-code-from jupyterlab --no-color
               aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
             - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', S3BucketName: !ImportValue 'S3BucketName' , ImageTag: !ImportValue 'ImageTagExport' }
   InstanceSecurityGroup:

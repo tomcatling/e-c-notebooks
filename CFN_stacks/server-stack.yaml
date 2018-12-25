@@ -60,7 +60,7 @@ Resources:
               git clone ${CodeCommitRepo} .
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
               docker pull ${ImageTag}
-              IMAGE_TAG=${ImageTag} docker-compose up
+              IMAGE_TAG=${ImageTag} docker-compose -f docker/docker-compose.yaml up
             - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', ImageTag: !ImportValue 'ImageTagExport' }
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
