@@ -1,0 +1,4 @@
+ParameterKey=KeyName,ParameterValue=aws-ec2
+ParameterKey=InstanceType,ParameterValue=t2.large
+ParameterKey=SSHLocation,ParameterValue=46.208.238.80/32
+ParameterKey=Timeout,ParameterValue=60

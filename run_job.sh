@@ -19,36 +19,30 @@ fail_exit() {
   exit 1
 }
 
-if [ -z "${IPYNB_FILE}" ]; then
+if [ -z "$IPYNB_FILE" ]; then
 	fail_exit "Notebook file not specified"
 fi
 
-if [ ! -f "${IPYNB_FILE}" ]; then
+if [ ! -f "$IPYNB_FILE" ]; then
     fail_exit "File: ${IPYNB_FILE} - does not exist"
 fi
 
 stackname=headless-job-$(date "+%Y%m%d%H%M%S")
 
-# Append the notebooks path to the parameters then reformat for inserting via cli
-params=$(cat CFN_stacks/stack-config.json | python -c "\
-import sys, json;\
-param_list=json.load(sys.stdin);\
-param_list.append({'ParameterKey': 'NotebookJobPath', 'ParameterValue': '${IPYNB_FILE}'.replace(' ','#')});\
-param_string = str(['{}={}'.format(k,pair[k]) for pair in param_list for k in ['ParameterKey','ParameterValue']]);\
-param_string = param_string.replace('\'','').lstrip('[').rstrip(']').replace(', ParameterKey',' ParameterKey').replace(' ParameterValue','ParameterValue');\
-print(param_string)")
-
-aws cloudformation create-stack --stack-name ${stackname} \
---template-body file://CFN_stacks/job-stack.yaml --parameters $params
+# Add in the notebook path as an additional parameter.
+# Replace spaces with #, can't seem to pass them in otherwise
+aws cloudformation create-stack --stack-name $stackname \
+--template-body file://CFN_stacks/job-stack.yaml \
+--parameters $(cat CFN_stacks/config) ParameterKey=NotebookJobPath,ParameterValue=${IPYNB_FILE// /#} 
 
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name $stackname
 
 public_ip=$(aws cloudformation describe-stacks --stack-name $stackname --query \
-"Stacks[0].Outputs[?OutputKey=='$stackname::JobPublicIp'].OutputValue" --output text)
+"Stacks[0].Outputs[?ExportName=='$stackname::JobPublicIp'].OutputValue" --output text)
 
 bucket=$(aws cloudformation describe-stacks --stack-name $stackname --query \
 "Stacks[0].Outputs[?OutputKey=='S3BucketName'].OutputValue" --output text)
 
 echo "...job is running at: ${public_ip}"
-echo "Output will be placed in S3://${bucket}/${IPYNB_FILE}/${stackname}.ipynb"
+echo "Output will be placed in S3://$bucket/$IPYNB_FILE/$stackname.ipynb"
