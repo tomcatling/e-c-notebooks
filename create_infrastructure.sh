@@ -11,6 +11,12 @@ echo "Waiting for stack creation to finish..."
 
 aws cloudformation wait stack-create-complete --stack-name e-c-notebooks-infrastructure
 
+echo "Creating ssh key..."
+
+ssh-keygen -t rsa -C "aws-key-e-c-notebooks" -f ~/.ssh/aws-key-e-c-notebooks -q -N ""
+chmod 400 ~/.ssh/aws-key-e-c-notebooks
+aws ec2 import-key-pair --key-name e-c-notebooks --public-key-material file://$HOME/.ssh/aws-key-e-c-notebooks.pub
+
 echo "Configuring notebook server. Please enter a password:"
 
 hash=$(python -c "from notebook.auth import passwd;print(passwd())")
@@ -22,7 +28,7 @@ echo "c.NotebookApp.port = 8888" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.allow_root = True" >> docker/jupyter_notebook_config.py
 
 cc_addr=$(AWS_PROFILE=$AWS_PROFILE aws cloudformation describe-stacks --stack-name e-c-notebooks-infrastructure --query \
-"Stacks[0].Outputs[?OutputKey=='CodeCommitAddress'].OutputValue" --output text)
+"Stacks[0].Outputs[?ExportName=='ECNotebooks::CodeCommitAddress'].OutputValue" --output text)
 
 echo "Adding 'codecommit' as a remote for git..."
 echo "git remote add codecommit ${cc_addr}"

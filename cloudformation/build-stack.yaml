@@ -47,15 +47,15 @@ Resources:
             Action:
               - s3:List
               - s3:Get
-            Resource: arn:aws:s3:::e-c-notebooks.${AWS::AccountId}/*            
+            Resource: !Join [ "", [ "arn:aws:s3:::e-c-notebooks.", !Ref "AWS::AccountId", "/*" ] ]
           - Effect: Allow
             Action:
               - s3:Put
-            Resource: arn:aws:s3:::e-c-notebooks.${AWS::AccountId}/outputs/*  
+            Resource: !Join [ "", [ "arn:aws:s3:::e-c-notebooks.", !Ref "AWS::AccountId", "/outputs/*" ] ]
           - Effect: Allow
             Action:
               - ecr:*
-            Resource: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/e-c-notebooks-ecr
+            Resource: arn:aws:ecr:::repository/e-c-notebooks-ecr
           - Effect: Allow
             Action:
               - codecommit:GitPull
@@ -65,15 +65,15 @@ Resources:
               - ec2:TerminateInstances
               - ec2:DeleteSecurityGroup
               - ec2:DescribeInstances
-            Resource: !Ref EC2Instance
+            Resource: !Join [ "", [ "arn:aws:ec2:::instance/", !Ref "EC2Instance" ] ]
           - Effect: Allow
             Action:
               - iam:DeleteInstanceProfile
               - iam:RemoveRoleFromInstanceProfile
-            Resource: !Ref InstanceProfile    
+            Resource: !Join [ "", [ "arn:aws:iam:::instance-profile/", !Ref "InstanceProfile" ] ]
           - Effect: Allow
             Action:
-            - 'cloudformation:DeleteStack'
+              - 'cloudformation:DeleteStack'
             Resource: 
               - !Ref 'AWS::StackId'
       Roles:
@@ -102,7 +102,7 @@ Resources:
     Properties:
       InstanceType: !Ref 'InstanceType'
       SecurityGroups: [!Ref 'InstanceSecurityGroup']
-      KeyName: !Ref 'KeyName'
+      KeyName: e-c-notebooks
       ImageId: ami-0bab1e17be043c7e9
       IamInstanceProfile: !Ref InstanceProfile
       UserData:
