@@ -40,7 +40,7 @@ Resources:
       SecurityGroups: [!Ref 'InstanceSecurityGroup']
       KeyName: !Ref 'KeyName'
       ImageId: ami-0bab1e17be043c7e9
-      IamInstanceProfile: !ImportValue 'InstanceProfile::S3Access'
+      IamInstanceProfile: !ImportValue 'ECNotebooks::InstanceProfile'
       UserData:
         Fn::Base64: !Sub 
             - |
@@ -62,7 +62,7 @@ Resources:
               docker build -t ${ImageTag} ./docker
               docker push ${ImageTag}
               aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
-            - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', ImageTag: !ImportValue 'ImageTagExport' }
+            - { CodeCommitRepo: !ImportValue 'ECNotebooks::CodeCommitAddress', ImageTag: !ImportValue 'ECNotebooks::ImageTagExport' }
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
