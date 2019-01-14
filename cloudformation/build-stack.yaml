@@ -93,8 +93,6 @@ Resources:
             Action:
               - codecommit:GitPull
             Resource: arn:aws:codecommit:*:*:e-c-notebooks
-      Roles:
-        - !Ref InstanceRole
   RootInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
