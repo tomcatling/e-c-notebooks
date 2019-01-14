@@ -86,4 +86,4 @@ Outputs:
     Description: Public IP address of the newly created EC2 instance
     Value: !GetAtt [EC2Instance, PublicIp]
     Export:
-      Name: "BuildPublicIp"
+      Name: "ECNotebooks::BuildPublicIp"
