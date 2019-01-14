@@ -13,7 +13,7 @@ aws cloudformation wait stack-create-complete --stack-name e-c-notebooks-infrast
 
 echo "Creating ssh key..."
 
-ssh-keygen -t rsa -C "aws-key-e-c-notebooks" -f ~/.ssh/aws-key-e-c-notebooks -q -N ""
+ssh-keygen -t rsa -f ~/.ssh/aws-key-e-c-notebooks -q -N ""
 chmod 400 ~/.ssh/aws-key-e-c-notebooks
 aws ec2 import-key-pair --key-name e-c-notebooks --public-key-material file://$HOME/.ssh/aws-key-e-c-notebooks.pub
 
