@@ -111,7 +111,8 @@ Resources:
               #!/bin/bash
               set -e
               function cleanup {
-                aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
+                #aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
+                echo "error"
               }
               trap cleanup EXIT
               at now +${Timeout} minutes -f cleanup
@@ -131,6 +132,7 @@ Resources:
               docker pull ${ImageTag}
               nbpath=$(echo ${NotebookJobPath} | sed 's/#SPACE#/ /g')
               NB_PATH="$nbpath" IMAGE_TAG=${ImageTag} S3_BUCKET=${S3BucketName} STACK_NAME=${AWS::StackName} docker-compose -f docker/docker-compose.yaml -f docker/headless-compose-override.yaml up --exit-code-from jupyterlab --no-color
+              aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
             - { CodeCommitRepo: !ImportValue 'ECNotebooks::CodeCommitAddress', S3BucketName: !ImportValue 'ECNotebooks::S3BucketName' , ImageTag: !ImportValue 'ECNotebooks::ImageTagExport' }
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup

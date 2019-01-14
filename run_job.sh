@@ -29,21 +29,35 @@ fi
 
 stackname=e-c-notebooks-job-$(date "+%Y%m%d%H%M%S")
 
+my_ip=$(dig @resolver1.opendns.com A myip.opendns.com +short -4)
+
 # Add in the notebook path as an additional parameter.
 # Replace spaces with #, can't seem to pass them in otherwise
 aws cloudformation create-stack --stack-name $stackname \
 --template-body file://cloudformation/job-stack.yaml \
---parameters $(cat cloudformation/config) \
-ParameterKey=NotebookJobPath,ParameterValue=$(echo ${IPYNB_FILE} | sed 's/ /#SPACE#/g')
+--parameters ParameterKey=InstanceType,ParameterValue=t2.large \
+ParameterKey=SSHLocation,ParameterValue=$my_ip/32 \
+ParameterKey=Timeout,ParameterValue=3600 \
+ParameterKey=NotebookJobPath,ParameterValue=$(echo ${IPYNB_FILE} | sed 's/ /#SPACE#/g') \
+--capabilities CAPABILITY_NAMED_IAM
 
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name $stackname
 
-public_ip=$(aws cloudformation describe-stacks --stack-name $stackname --query \
+
+if [ -z $AWS_PROFILE ]; then 
+	public_ip=$(aws cloudformation describe-stacks --stack-name $stackname --query \
 "Stacks[0].Outputs[?ExportName=='ECNotebooks::$stackname::JobPublicIp'].OutputValue" --output text)
 
-bucket=$(aws cloudformation describe-stacks --stack-name $stackname --query \
+	bucket=$(aws cloudformation describe-stacks --stack-name $stackname --query \
 "Stacks[0].Outputs[?OutputKey=='ECNotebooks::S3BucketName'].OutputValue" --output text)
+else 
+	public_ip=$(AWS_PROFILE=$AWS_PROFILE aws cloudformation describe-stacks --stack-name $stackname --query \
+"Stacks[0].Outputs[?ExportName=='ECNotebooks::$stackname::JobPublicIp'].OutputValue" --output text)
+
+	bucket=$(AWS_PROFILE=$AWS_PROFILE aws cloudformation describe-stacks --stack-name $stackname --query \
+"Stacks[0].Outputs[?OutputKey=='ECNotebooks::S3BucketName'].OutputValue" --output text)
+fi
 
 echo "...job is running at: ${public_ip}"
 echo "Output will be placed in S3://$bucket/$IPYNB_FILE/$stackname.ipynb"
