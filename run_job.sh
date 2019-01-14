@@ -33,7 +33,7 @@ stackname=headless-job-$(date "+%Y%m%d%H%M%S")
 # Replace spaces with #, can't seem to pass them in otherwise
 aws cloudformation create-stack --stack-name $stackname \
 --template-body file://cloudformation/job-stack.yaml \
---parameters $(cat cloudformation/config) ParameterKey=NotebookJobPath,ParameterValue=${IPYNB_FILE// /#} 
+--parameters $(cat cloudformation/config) ParameterKey=NotebookJobPath,ParameterValue=$(echo ${IPYNB_FILE} | sed 's/ /#/g')
 
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name $stackname
