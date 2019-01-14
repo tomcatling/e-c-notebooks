@@ -1,3 +1,0 @@
-ParameterKey=InstanceType,ParameterValue=t2.large
-ParameterKey=SSHLocation,ParameterValue=89.36.64.36/32
-ParameterKey=Timeout,ParameterValue=60

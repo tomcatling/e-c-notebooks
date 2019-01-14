@@ -8,14 +8,6 @@ Description: >-
   Ports 22,8888 and 443 are open to connections from <ip range>.
   On startup, the image will install jupyterlab and run a server.
 Parameters:
-  KeyName:
-    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
-    Type: AWS::EC2::KeyPair::KeyName
-    ConstraintDescription: must be the name of an existing EC2 KeyPair.
-  CodeCommitRepoName:
-    Description: Name of the CodeCommit repository created for this stack.
-    Default: data-science-stack
-    Type: String
   Timeout:
     Description: Length of the timeout in minutes
     Type: String
@@ -33,14 +25,83 @@ Parameters:
     AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
 Resources:
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "EC2Role-${AWS::StackName}"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ ec2.amazonaws.com ]
+          Action: [ "sts:AssumeRole" ]
+      Path: /
+      Policies:
+      - PolicyName: EC2Policy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+              - 'cloudformation:DeleteStack'
+            Resource: !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+          - Effect: Allow
+            Action:
+              - ec2:TerminateInstances
+              - ec2:DeleteSecurityGroup
+            Resource: '*'
+            Condition:
+              StringEquals:
+                "ec2:ResourceTag/aws:cloudformation:stack-id": !Ref AWS::StackId
+          - Effect: Allow
+            Action:
+              - iam:DeleteInstanceProfile
+              - iam:RemoveRoleFromInstanceProfile
+            Resource: !Sub "arn:aws:iam::${AWS::AccountId}:instance-profile/*"
+          - Effect: Allow
+            Action:
+              - iam:DeleteRolePolicy
+              - iam:DeleteRole
+            Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/EC2Role-${AWS::StackName}"
+          - Effect: Allow
+            Action: 
+              - ec2:DescribeInstances
+            Resource: '*'
+          - Effect: Allow
+            Action:
+              - ecr:GetAuthorizationToken
+            Resource: '*'
+          - Effect: Allow
+            Action:
+              - s3:List
+              - s3:Get
+            Resource: !Sub "arn:aws:s3:::e-c-notebooks.${AWS::AccountId}/*"
+          - Effect: Allow
+            Action:
+              - s3:Put
+            Resource: !Sub "arn:aws:s3:::e-c-notebooks.${AWS::AccountId}/outputs/*"
+          - Effect: Allow
+            Action:
+              - ecr:*
+            Resource: arn:aws:ecr:*:*:repository/e-c-notebooks
+          - Effect: Allow
+            Action:
+              - codecommit:GitPull
+            Resource: arn:aws:codecommit:*:*:e-c-notebooks
+  RootInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles: [ !Ref EC2Role ]
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref 'InstanceType'
       SecurityGroups: [!Ref 'InstanceSecurityGroup', !Ref 'JupyterSecurityGroup']
-      KeyName: !Ref 'KeyName'
+      KeyName: e-c-notebooks
       ImageId: ami-0bab1e17be043c7e9
-      IamInstanceProfile: !ImportValue 'ECNotebooks::InstanceProfile'
+      IamInstanceProfile: !Ref RootInstanceProfile
       UserData:
         Fn::Base64: !Sub 
             - |
@@ -81,15 +142,6 @@ Resources:
         ToPort: 8888
         CidrIp: !Ref 'SSHLocation'
 Outputs:
-  InstanceId:
-    Description: InstanceId of the newly created EC2 instance
-    Value: !Ref 'EC2Instance'
-  AZ:
-    Description: Availability Zone of the newly created EC2 instance
-    Value: !GetAtt [EC2Instance, AvailabilityZone]
-  PublicDNS:
-    Description: Public DNSName of the newly created EC2 instance
-    Value: !GetAtt [EC2Instance, PublicDnsName]
   PublicIP:
     Description: Public IP address of the newly created EC2 instance
     Value: !GetAtt [EC2Instance, PublicIp]

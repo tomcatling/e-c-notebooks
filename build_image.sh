@@ -10,9 +10,13 @@ if [ ! -f ./tempkey.pem ]; then
 	chmod 400 tempkey.pem
 fi
 
+my_ip=$(dig @resolver1.opendns.com A myip.opendns.com +short -4)
 
 aws cloudformation create-stack --stack-name e-c-notebooks-builder \
---template-body file://cloudformation/build-stack.yaml --parameters $(cat cloudformation/config) \
+--template-body file://cloudformation/build-stack.yaml \
+--parameters ParameterKey=InstanceType,ParameterValue=t2.large \
+ParameterKey=SSHLocation,ParameterValue=$my_ip/32 \
+ParameterKey=Timeout,ParameterValue=3600 \
 --capabilities CAPABILITY_NAMED_IAM
 
 echo "Waiting for stack creation to finish..."

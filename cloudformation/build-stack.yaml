@@ -110,7 +110,12 @@ Resources:
         Fn::Base64: !Sub 
             - |
               #!/bin/bash
-              at now +${Timeout} minutes -f aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
+              set -e
+              function cleanup {
+                aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
+              }
+              trap cleanup EXIT
+              at now +${Timeout} minutes -f cleanup
               yum update -y
               amazon-linux-extras install docker
               usermod -a -G docker ec2-user
@@ -126,7 +131,6 @@ Resources:
               $(aws ecr get-login --no-include-email --region ${AWS::Region})
               docker build -t ${ImageTag} ./docker
               docker push ${ImageTag}
-              aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
             - { CodeCommitRepo: !ImportValue 'ECNotebooks::CodeCommitAddress', ImageTag: !ImportValue 'ECNotebooks::ImageTagExport' }
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
