@@ -110,7 +110,6 @@ Resources:
         Fn::Base64: !Sub 
             - |
               #!/bin/bash
-              aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
               at now +${Timeout} minutes -f aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
               yum update -y
               amazon-linux-extras install docker
