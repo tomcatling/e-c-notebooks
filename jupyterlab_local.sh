@@ -2,7 +2,7 @@
 set -eo pipefail
 
 image_tag=$(aws cloudformation describe-stacks --stack-name infrastructure --query \
-"Stacks[0].Outputs[?ExportName=='ImageTagExport'].OutputValue" --output text)
+"Stacks[0].Outputs[?ExportName=='ECNotebooks::ImageTagExport'].OutputValue" --output text)
 
 $(aws ecr get-login --no-include-email)
 echo "Pulling $image_tag"
