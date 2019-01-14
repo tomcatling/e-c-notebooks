@@ -21,7 +21,7 @@ echo "c.NotebookApp.port = 8888" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.allow_root = True" >> docker/jupyter_notebook_config.py
 
 cc_addr=$(aws cloudformation describe-stacks --stack-name infrastructure --query \
-"Stacks[0].Outputs[?OutputKey=='CodeCommitAddress'].OutputValue" --output text)
+"Stacks[0].Outputs[?OutputKey=='ECNotebooks::CodeCommitAddress'].OutputValue" --output text)
 
 echo "Adding 'codecommit' as a remote for git..."
 echo "git remote add codecommit ${cc_addr}"
