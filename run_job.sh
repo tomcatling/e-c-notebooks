@@ -59,5 +59,6 @@ else
 "Stacks[0].Outputs[?OutputKey=='ECNotebooks::S3BucketName'].OutputValue" --output text)
 fi
 
-echo "...job is running at: ${public_ip}"
+echo "...job is running at:"
+echo "ssh -i tempkey.pem ec2-user@${public_ip}"
 echo "Output will be placed in S3://$bucket/$IPYNB_FILE/$stackname.ipynb"
