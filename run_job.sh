@@ -27,13 +27,14 @@ if [ ! -f "$IPYNB_FILE" ]; then
     fail_exit "File: ${IPYNB_FILE} - does not exist"
 fi
 
-stackname=headless-job-$(date "+%Y%m%d%H%M%S")
+stackname=e-c-notebooks-job-$(date "+%Y%m%d%H%M%S")
 
 # Add in the notebook path as an additional parameter.
 # Replace spaces with #, can't seem to pass them in otherwise
 aws cloudformation create-stack --stack-name $stackname \
 --template-body file://cloudformation/job-stack.yaml \
---parameters $(cat cloudformation/config) ParameterKey=NotebookJobPath,ParameterValue=$(echo ${IPYNB_FILE} | sed 's/ /#/g')
+--parameters $(cat cloudformation/config) \
+ParameterKey=NotebookJobPath,ParameterValue=$(echo ${IPYNB_FILE} | sed 's/ /#SPACE#/g')
 
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name $stackname

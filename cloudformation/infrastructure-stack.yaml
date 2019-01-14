@@ -12,11 +12,15 @@ Description: >-
 Parameters:
   ECRRepositoryName:
     Description: Name of the codecommit and ECR repos for this project
-    Default: data-science-stack-ecr-repo
+    Default: e-c-notebooks
     Type: String
   CodeCommitRepositoryName:
     Description: Name of the codecommit and ECR repos for this project
-    Default: data-science-stack-cc-repo
+    Default: e-c-notebooks
+    Type: String
+  S3BucketName:
+    Description: Name of the codecommit and ECR repos for this project
+    Default: e-c-notebooks
     Type: String
 Resources:
   CodeCommitRepo:
@@ -28,55 +32,13 @@ Resources:
     Type: AWS::ECR::Repository
     Properties: 
       RepositoryName: !Ref ECRRepositoryName
-  InstanceProfile:
-    Type: 'AWS::IAM::InstanceProfile'
-    Properties:
-      Path: /
-      Roles:
-        - !Ref InstanceRole
-  InstancePolicy:
-    Type: 'AWS::IAM::Policy'
-    Properties:
-      PolicyName: InstancePolicy
-      PolicyDocument:
-        Statement:
-          - Effect: Allow
-            Action:
-              - 's3:*'
-              - 'codecommit:*'
-              - 'ecr:*'
-              - 'ec2:*'
-            Resource: '*'
-          - Effect: Allow
-            Action:
-            - 'cloudformation:DeleteStack'
-            Resource: '*'
-      Roles:
-        - !Ref InstanceRole
-  InstanceRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - ec2.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Path: /
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Join [ "-", [ !Ref "AWS::AccountId", "data-science-stack-outputs" ] ]
+      BucketName: !Join [ "", [ !Ref 'S3BucketName' , '.', !Ref 'AWS::AccountId'] ]
     DeletionPolicy: Delete
 Outputs:
-  InstanceRole:
-    Value: !Ref InstanceProfile
-    Export:
-      Name: "ECNotebooks::InstanceProfile"
-  S3BucketName:
+  S3BucketNameOut:
     Value: !Ref S3Bucket
     Export:
       Name: "ECNotebooks::S3BucketName"

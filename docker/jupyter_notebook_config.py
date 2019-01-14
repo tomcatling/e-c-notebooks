@@ -1,4 +1,4 @@
-c.NotebookApp.password = 'sha1:bdf2b60d1997:61d1be24aff7851ad4290b780d9e2c3fabb16f62'
+c.NotebookApp.password = sha1:3ce01d37c818:53250da1085e6bf1f2d4c657934d1038c4ab1431
 c.NotebookApp.password_required = True
 c.NotebookApp.allow_origin = '*'
 c.NotebookApp.open_browser = False
