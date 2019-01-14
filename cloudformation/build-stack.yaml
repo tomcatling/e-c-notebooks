@@ -115,7 +115,7 @@ Resources:
                 aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
               }
               trap cleanup EXIT
-              at now +${Timeout} minutes -f aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
+              echo "aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}" | at now +${Timeout} minutes 
               yum update -y
               amazon-linux-extras install docker
               usermod -a -G docker ec2-user
