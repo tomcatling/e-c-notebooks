@@ -28,16 +28,16 @@ Resources:
     Type: AWS::ECR::Repository
     Properties: 
       RepositoryName: !Ref ECRRepositoryName
-  ListS3BucketsInstanceProfile:
+  InstanceProfile:
     Type: 'AWS::IAM::InstanceProfile'
     Properties:
       Path: /
       Roles:
-        - !Ref ListS3BucketsRole
-  ListS3BucketsPolicy:
+        - !Ref InstanceRole
+  InstancePolicy:
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: ListS3BucketsPolicy
+      PolicyName: InstancePolicy
       PolicyDocument:
         Statement:
           - Effect: Allow
@@ -52,8 +52,8 @@ Resources:
             - 'cloudformation:DeleteStack'
             Resource: '*'
       Roles:
-        - !Ref ListS3BucketsRole
-  ListS3BucketsRole:
+        - !Ref InstanceRole
+  InstanceRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
@@ -73,18 +73,18 @@ Resources:
     DeletionPolicy: Delete
 Outputs:
   InstanceRole:
-    Value: !Ref ListS3BucketsInstanceProfile
+    Value: !Ref InstanceProfile
     Export:
-      Name: "InstanceProfile::S3Access"
+      Name: "ECNotebooks::InstanceProfile"
   S3BucketName:
     Value: !Ref S3Bucket
     Export:
-      Name: "S3BucketName"
+      Name: "ECNotebooks::S3BucketName"
   CodeCommitAddress:
     Value: !GetAtt CodeCommitRepo.CloneUrlHttp
     Export:
-      Name: "CodeCommitAddress"
+      Name: "ECNotebooks::CodeCommitAddress"
   ImageTag:
     Value: !Join [ "", [ !Ref "AWS::AccountId", ".dkr.ecr.", !Ref "AWS::Region", ".amazonaws.com/", !Ref "ECRRepositoryName" ] ]
     Export:
-      Name: "ImageTagExport"
+      Name: "ECNotebooks::ImageTagExport"
