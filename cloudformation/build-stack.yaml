@@ -38,8 +38,7 @@ Resources:
           - Effect: Allow
             Action:
               - 'cloudformation:DeleteStack'
-            Resource: 
-              - !Ref 'AWS::StackId'
+            Resource: !Sub arn:aws:cloudformation:*:${AWS::AccountId}:stack/${AWS::StackName}/*
           - Effect: Allow
             Action:
               - ec2:TerminateInstances
