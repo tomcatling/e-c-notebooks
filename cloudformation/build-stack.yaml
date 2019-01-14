@@ -29,16 +29,27 @@ Parameters:
     AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
 Resources:
-  InstancePolicy:
-    Type: 'AWS::IAM::Policy'
+  EC2Role:
+    Type: AWS::IAM::Role
     Properties:
-      PolicyName: InstancePolicy
-      PolicyDocument:
+      RoleName: !Sub "EC2Role-${AWS::StackName}"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
         Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ ec2.amazonaws.com ]
+          Action: [ "sts:AssumeRole" ]
+      Path: /
+      Policies:
+      - PolicyName: EC2Policy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
           - Effect: Allow
             Action:
               - 'cloudformation:DeleteStack'
-            Resource: !Sub arn:aws:cloudformation:*:${AWS::AccountId}:stack/${AWS::StackName}/*
+            Resource: !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
           - Effect: Allow
             Action:
               - ec2:TerminateInstances
@@ -69,11 +80,11 @@ Resources:
             Action:
               - s3:List
               - s3:Get
-            Resource: !Join [ "", [ "arn:aws:s3:::e-c-notebooks.", !Ref "AWS::AccountId", "/*" ] ]
+            Resource: !Sub "arn:aws:s3:::e-c-notebooks.${AWS::AccountId}/*"
           - Effect: Allow
             Action:
               - s3:Put
-            Resource: !Join [ "", [ "arn:aws:s3:::e-c-notebooks.", !Ref "AWS::AccountId", "/outputs/*" ] ]
+            Resource: !Sub "arn:aws:s3:::e-c-notebooks.${AWS::AccountId}/outputs/*"
           - Effect: Allow
             Action:
               - ecr:*
@@ -84,34 +95,19 @@ Resources:
             Resource: arn:aws:codecommit:*:*:e-c-notebooks
       Roles:
         - !Ref InstanceRole
-  InstanceRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      RoleName: !Sub "EC2Role-${AWS::StackName}"
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - ec2.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Path: /
-  InstanceProfile:
-    Type: 'AWS::IAM::InstanceProfile'
+  RootInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
     Properties:
       Path: /
-      Roles:
-        - !Ref InstanceRole
+      Roles: [ !Ref EC2Role ]
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref 'InstanceType'
-      SecurityGroups: [!Ref 'InstanceSecurityGroup']
+      SecurityGroups: [ !Ref 'InstanceSecurityGroup' ]
       KeyName: e-c-notebooks
       ImageId: ami-0bab1e17be043c7e9
-      IamInstanceProfile: !Ref InstanceProfile
+      IamInstanceProfile: !Ref RootInstanceProfile
       UserData:
         Fn::Base64: !Sub 
             - |
