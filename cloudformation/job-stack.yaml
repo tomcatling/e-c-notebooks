@@ -47,7 +47,7 @@ Resources:
       SecurityGroups: [!Ref 'InstanceSecurityGroup']
       KeyName: !Ref 'KeyName'
       ImageId: ami-0bab1e17be043c7e9
-      IamInstanceProfile: !ImportValue 'InstanceProfile::S3Access'
+      IamInstanceProfile: !ImportValue 'ECNotebooks::InstanceProfile'
       UserData:
         Fn::Base64: !Sub 
             - |
@@ -70,7 +70,7 @@ Resources:
               nbpath=$(echo ${NotebookJobPath} | sed 's/#/ /g')
               NB_PATH="$nbpath" IMAGE_TAG=${ImageTag} S3_BUCKET=${S3BucketName} STACK_NAME=${AWS::StackName} docker-compose -f docker/docker-compose.yaml -f docker/headless-compose-override.yaml up --exit-code-from jupyterlab --no-color
               aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
-            - { CodeCommitRepo: !ImportValue 'CodeCommitAddress', S3BucketName: !ImportValue 'S3BucketName' , ImageTag: !ImportValue 'ImageTagExport' }
+            - { CodeCommitRepo: !ImportValue 'ECNotebooks::CodeCommitAddress', S3BucketName: !ImportValue 'ECNotebooks::S3BucketName' , ImageTag: !ImportValue 'ECNotebooks::ImageTagExport' }
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
