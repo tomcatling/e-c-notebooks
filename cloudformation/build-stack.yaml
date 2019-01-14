@@ -37,6 +37,33 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
+              - 'cloudformation:DeleteStack'
+            Resource: 
+              - !Ref 'AWS::StackId'
+          - Effect: Allow
+            Action:
+              - ec2:TerminateInstances
+              - ec2:DeleteSecurityGroup
+            Resource: '*'
+            Condition:
+              StringEquals:
+                "ec2:ResourceTag/aws:cloudformation:stack-id": !Ref AWS::StackId
+          - Effect: Allow
+            Action:
+              - iam:DeleteInstanceProfile
+              - iam:RemoveRoleFromInstanceProfile
+            Resource: !Sub "arn:aws:iam::${AWS::AccountId}:instance-profile/*"
+          - Effect: Allow
+            Action:
+              - iam:DeleteRolePolicy
+              - iam:DeleteRole
+            Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/EC2Role-${AWS::StackName}"
+          - Effect: Allow
+            Action: 
+              - ec2:DescribeInstances
+            Resource: '*'
+          - Effect: Allow
+            Action:
               - ecr:GetAuthorizationToken
             Resource: '*'
           - Effect: Allow
@@ -51,32 +78,17 @@ Resources:
           - Effect: Allow
             Action:
               - ecr:*
-            Resource: arn:aws:ecr:::repository/e-c-notebooks-ecr
+            Resource: arn:aws:ecr:*:*:repository/e-c-notebooks
           - Effect: Allow
             Action:
               - codecommit:GitPull
-            Resource: arn:aws:codecommit:::e-c-notebooks
-          - Effect: Allow
-            Action:
-              - ec2:TerminateInstances
-              - ec2:DeleteSecurityGroup
-              - ec2:DescribeInstances
-            Resource: !Join [ "", [ "arn:aws:ec2:::instance/", !Ref "EC2Instance" ] ]
-          - Effect: Allow
-            Action:
-              - iam:DeleteInstanceProfile
-              - iam:RemoveRoleFromInstanceProfile
-            Resource: !Join [ "", [ "arn:aws:iam:::instance-profile/", !Ref "InstanceProfile" ] ]
-          - Effect: Allow
-            Action:
-              - 'cloudformation:DeleteStack'
-            Resource: 
-              - !Ref 'AWS::StackId'
+            Resource: arn:aws:codecommit:*:*:e-c-notebooks
       Roles:
         - !Ref InstanceRole
   InstanceRole:
     Type: 'AWS::IAM::Role'
     Properties:
+      RoleName: !Sub "EC2Role-${AWS::StackName}"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -105,6 +117,7 @@ Resources:
         Fn::Base64: !Sub 
             - |
               #!/bin/bash
+              aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
               at now +${Timeout} minutes -f aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
               yum update -y
               amazon-linux-extras install docker

@@ -21,8 +21,14 @@ echo "c.NotebookApp.open_browser = False" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.port = 8888" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.allow_root = True" >> docker/jupyter_notebook_config.py
 
-cc_addr=$(AWS_PROFILE=$AWS_PROFILE aws cloudformation describe-stacks --stack-name e-c-notebooks-infrastructure --query \
+
+if [ -z $AWS_PROFILE ]; then 
+	cc_addr=$(aws cloudformation describe-stacks --stack-name e-c-notebooks-infrastructure --query \
 "Stacks[0].Outputs[?ExportName=='ECNotebooks::CodeCommitAddress'].OutputValue" --output text)
+else 
+	cc_addr=$(AWS_PROFILE=$AWS_PROFILE aws cloudformation describe-stacks --stack-name e-c-notebooks-infrastructure --query \
+"Stacks[0].Outputs[?ExportName=='ECNotebooks::CodeCommitAddress'].OutputValue" --output text)
+fi
 
 echo "Adding 'codecommit' as a remote for git..."
 echo "git remote add codecommit ${cc_addr}"

@@ -1,4 +1,5 @@
-c.NotebookApp.password = sha1:3ce01d37c818:53250da1085e6bf1f2d4c657934d1038c4ab1431
+c.NotebookApp.password = Passwords do not match.
+sha1:45ca2e027046:23b3ca006170e8ff26c0d437daa649ba878e1a3a
 c.NotebookApp.password_required = True
 c.NotebookApp.allow_origin = '*'
 c.NotebookApp.open_browser = False
