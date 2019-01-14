@@ -8,10 +8,6 @@ Description: >-
   Ports 22,8888 and 443 are open to connections from <ip range>.
   On startup, the image will install jupyterlab and run a server.
 Parameters:
-  KeyName:
-    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
-    Type: AWS::EC2::KeyPair::KeyName
-    ConstraintDescription: must be the name of an existing EC2 KeyPair.
   CodeCommitRepoName:
     Description: Name of the CodeCommit repository created for this stack.
     Default: data-science-stack

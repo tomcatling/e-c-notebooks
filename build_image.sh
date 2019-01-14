@@ -1,6 +1,15 @@
 #!/bin/bash
 set -eo pipefail
 
+if [ ! -f ./tempkey.pem ]; then
+	echo "Creating ssh key..."
+	aws ec2 delete-key-pair --key-name e-c-notebooks
+	sleep 2
+	aws ec2 create-key-pair --key-name e-c-notebooks --query 'KeyMaterial' --output text > tempkey.pem
+	sleep 2
+	chmod 400 tempkey.pem
+fi
+
 
 aws cloudformation create-stack --stack-name e-c-notebooks-builder \
 --template-body file://cloudformation/build-stack.yaml --parameters $(cat cloudformation/config) \
@@ -12,4 +21,5 @@ aws cloudformation wait stack-create-complete --stack-name e-c-notebooks-builder
 public_ip=$(AWS_PROFILE=$AWS_PROFILE aws cloudformation describe-stacks --stack-name e-c-notebooks-builder --query \
 "Stacks[0].Outputs[?ExportName=='ECNotebooks::BuildPublicIp'].OutputValue" --output text)
 
-echo "...builder is running at: ${public_ip}"
+echo "Connect to instance using:"
+echo "ssh -i tempkey.pem ubuntu@${public_ip}"
