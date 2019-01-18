@@ -2,8 +2,6 @@
 
 **Work in Progress**
 
-**The instance role created by the infrastructure stack is currently very permissive.**
-
 ------------------------
 
 
