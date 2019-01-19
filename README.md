@@ -1,6 +1,6 @@
 ------------------------
 <p align="center">
-**Work in Progress**
+  <b>Work in Progress</b>
 </p>
 
 ------------------------
