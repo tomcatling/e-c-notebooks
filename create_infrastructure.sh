@@ -13,13 +13,25 @@ aws cloudformation wait stack-create-complete --stack-name e-c-notebooks-infrast
 
 echo "Configuring notebook server. Please enter a password:"
 
-hash=$(python -c "from notebook.auth import passwd;print(passwd())")
+hash=$(python -c "from notebook.auth import passwd;p=passwd();print(p)")
 echo "c.NotebookApp.password = $hash" > docker/jupyter_notebook_config.py
 echo "c.NotebookApp.password_required = True" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.allow_origin = '*'" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.open_browser = False" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.port = 8888" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.allow_root = True" >> docker/jupyter_notebook_config.py
+
+
+echo "Creating a private key for SSH."
+
+if [ ! -f ./instance_key.pem ]; then
+	echo "Creating ssh key..."
+	aws ec2 delete-key-pair --key-name e-c-notebooks
+	sleep 2
+	aws ec2 create-key-pair --key-name e-c-notebooks --query 'KeyMaterial' --output text > instance_key.pem
+	sleep 2
+	chmod 400 instance_key.pem
+fi
 
 
 if [ -z $AWS_PROFILE ]; then 

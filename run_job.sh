@@ -60,5 +60,5 @@ else
 fi
 
 echo "...job is running at:"
-echo "ssh -i tempkey.pem ec2-user@${public_ip}"
+echo "ssh -i instance_key.pem ec2-user@${public_ip}"
 echo "Output will be placed in S3://$bucket/$IPYNB_FILE/$stackname.ipynb"

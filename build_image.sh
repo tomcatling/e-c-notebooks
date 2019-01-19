@@ -1,15 +1,6 @@
 #!/bin/bash
 set -eo pipefail
 
-if [ ! -f ./tempkey.pem ]; then
-	echo "Creating ssh key..."
-	aws ec2 delete-key-pair --key-name e-c-notebooks
-	sleep 2
-	aws ec2 create-key-pair --key-name e-c-notebooks --query 'KeyMaterial' --output text > tempkey.pem
-	sleep 2
-	chmod 400 tempkey.pem
-fi
-
 my_ip=$(dig @resolver1.opendns.com A myip.opendns.com +short -4)
 
 aws cloudformation create-stack --stack-name e-c-notebooks-builder \
@@ -31,4 +22,4 @@ else
 fi
 
 echo "Connect to instance using:"
-echo "ssh -i tempkey.pem ec2-user@${public_ip}"
+echo "ssh -i instance_key.pem ec2-user@${public_ip}"
