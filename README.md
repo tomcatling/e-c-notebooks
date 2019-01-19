@@ -19,16 +19,25 @@ This repository is a recipe for setting up a Docker stack with JupyterLab for lo
 
 **You run these templates entirely at your own risk, and must accept responsibility for costs incurred by doing so!**
 
-First, you will need an access key for an IAM user with admin powers. Specifically, this user needs permissions to:
-
-* something
-* something else
-
-Configure your awscli to use this access key and id:
+First, you will need an access key for an IAM user with admin powers. Configure your awscli to use this access key and id:
 
 ```bash
 aws configure
 ```
+
+If you wish to use a named profile for this key you can use 
+
+```bash
+aws --profile <profile-name> configure
+```
+
+To run scripts in this repository under that profile you would then use
+
+```bash
+AWS_PROFILE=<profile-name> sh <script> <arguments>
+```
+
+The rest of this guide is written under the assumption that you are using the default profile in awscli.
 
 First, fork this repository and clone it to your local machine. 
 
@@ -42,7 +51,7 @@ You are now ready to apply the infrastructure CloudFormation stack. This stack c
 The script will also prompt you to create a password for remote jupyterlab access.
 
 ```bash
-./create_infrastructure.sh
+sh create_infrastructure.sh
 ```
 
 Note that if you are working on a Mac you will need to follow [these](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-https-unixes.html#setting-up-https-unixes-credential-helper) additional steps to stop your Keychain from storing the temporary password which the codecommit credential-helper provides to Git.
@@ -52,7 +61,7 @@ Note that if you are working on a Mac you will need to follow [these](https://do
 Now to build the image you can run:
 
 ```bash
-./run_build
+sh run_build.sh
 ```
 This takes a basic jupterlab docker image and builds in a few extra packages and the .config file with your password created in the previous step. You must run this build script again whenever you make changes to the docker image which you want the remote environment to see - for example adding a package.
 
@@ -63,7 +72,7 @@ Now you're ready to use the environment.
 For local development (you will need to wait for the image to download from ECR the first time you run this):
 
 ```bash
-./run_local_server.sh
+sh jupyterlab_local.sh
 ```
 
 After creating a notebook locally you need to add it into the repository.
@@ -77,14 +86,14 @@ git push codecommit master
 
 For remote development:
 ```bash
-./run_remote_server.sh
+sh jupyterlab_remote.sh
 ```
 
 Remember that notebooks which you develop remotely do not exist in the repository unless you add them. Adding them from the remote machine is more difficult because the `notebooks` directory itself is not connected to git or codecommit. 
 
 For running a job remotely from your local machine:
 ```bash
-./run_job relative-path-to-notebook
+sh run_job.sh relative-path-to-notebook
 ```
 
 Again, remember that the remote instance only has access to what is in the codecommit repository. Be sure to add any changes:
