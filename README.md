@@ -14,8 +14,6 @@ This repository is a recipe for setting up a Docker stack with JupyterLab for lo
 * your environment is consistent
 * CloudFormation allows tight control of your AWS resources
 
-Some manual work is required to set up this workflow. You will need a basic understanding AWS services, terminal usage and git. Many things will probably require tweaking to work on a Windows machine. If you make any improvements please submit a pull request!
-
 # Setup
 
 **You run these templates entirely at your own risk, and must accept responsibility for costs incurred by doing so!**
@@ -31,20 +29,16 @@ Configure your awscli to use this access key and id:
 aws configure
 ```
 
-You will also need to create an EC2 keypair and download the private key to your local machine. Once the key is downloaded, move it somewhere sensible and protect it:
-
-```bash
-mv ~/Downloads/aws-ec2.pem ~/.ssh/aws-ec2.pem && chmod 600 ~/.ssh/aws-ec2.pem
-```
-
-We will use this later to connect to our instances. Next, fork this repository and clone it to your local machine. 
+First, fork this repository and clone it to your local machine. 
 
 You are now ready to apply the infrastructure CloudFormation stack. This stack creates resources which will be used by our remote jobs, specifically:
 
-* An instance role to define the permissions given to the EC2 instance
 * An S3 bucket to hold the output of the jobs
 * An ECR repository to hold our environment image
 * A CodeCommit repository which will mirror your local Git repository.
+* A key pair which will be used to SSH into instances, with the private key saved locally.
+
+The script will also prompt you to create a password for remote jupyterlab access.
 
 ```bash
 ./create_infrastructure.sh
@@ -54,26 +48,18 @@ Note that if you are working on a Mac you will need to follow [these](https://do
 
 ## Ephemeral Stack Parameters
 
-Now you can set up the parameters in `cloudformation/stack-config.json`. Here you must specify:
-
-* KeyName : the name of the EC2 keypair you will use to SSH into the instances
-* InstanceType : the type of instance you want to use, e.g. t2.large
-* SSHLocation : **your** ip address in CIDR notation, which is the only one which will be allowed through the EC2 security group, e.g. 192.208.238.80/32
-* Timeout : a timeout in minutes for the ephemeral stack
-
-Now build the image we'll be using:
+Now to build the image you can run:
 
 ```bash
 ./run_build
 ```
-
-You must run this build script again whenever you make changes to the docker image which you want the remote environment to see - for example adding a package.
+This takes a basic jupterlab docker image and builds in a few extra packages and the .config file with your password created in the previous step. You must run this build script again whenever you make changes to the docker image which you want the remote environment to see - for example adding a package.
 
 # Usage
 
-Now you're ready to use the environment.
+Now you're ready to use the environment. 
 
-For local development:
+For local development (you will need to wait for the image to download from ECR the first time you run this):
 
 ```bash
 ./run_local_server.sh
@@ -93,7 +79,7 @@ For remote development:
 ./run_remote_server.sh
 ```
 
-Remember that notebooks which you develop remotely do not exist in the repository unless you add them. Adding them from the remote machine is more difficult because the `notebooks` directory is not set up as a git repository. 
+Remember that notebooks which you develop remotely do not exist in the repository unless you add them. Adding them from the remote machine is more difficult because the `notebooks` directory itself is not connected to git or codecommit. 
 
 For running a job remotely from your local machine:
 ```bash
@@ -116,7 +102,11 @@ The best way to see what's going on is to SSH into the instance.
 
 #### SSHing into an Instance
 
-Set up your SSH config to use the private key we previously downloaded (`~/.ssh/aws-ec2.pem`) as the identity when connecting to the ip returned by one of the above scripts. The username should be `ec2-user`.
+You can ssh into any of you instances using the private key created by `create_infrastructure.sh`.
+
+```bash
+ssh -i instance_key.pem ec2-user@<instance-ip>
+```
 
 Once you are 'in', the most useful command is probably:
 
