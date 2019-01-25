@@ -1,0 +1,5 @@
+# This is our Flake8 configuration file.  It gets copied to /home/jovyan/.flake8 in our image.
+[flake8]
+max-line-length = 120
+max-complexity = 10
+ignore = W293, W391, W503, F401, W291, F823, F821, W505, E401, E712
