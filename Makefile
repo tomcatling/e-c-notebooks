@@ -4,6 +4,9 @@ push:
 	git push origin
 	git push codecommit
 
+outputs:
+	echo "not configured"
+
 infrastructure:
 	sh scripts/create_infrastructure.sh
 

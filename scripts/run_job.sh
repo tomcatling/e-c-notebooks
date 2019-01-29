@@ -6,9 +6,9 @@ IPYNB_FILE=${1}
 usage() {
 	cat <<-EOF
 
-	Usage: $0 <path to notebook>
+	Usage: make job nbpath=<path to notebook>
 	  e.g.
-	  $0 notebooks/example.ipynb
+	  make job notebooks/example.ipynb
 	EOF
 	return
 }
@@ -47,8 +47,8 @@ aws cloudformation wait stack-create-complete --stack-name $stackname
 public_ip=$(aws cloudformation describe-stacks --stack-name $stackname --query \
 "Stacks[0].Outputs[?ExportName=='ECNotebooks::$stackname::JobPublicIp'].OutputValue" --output text)
 
-bucket=$(aws cloudformation describe-stacks --stack-name $stackname --query \
-"Stacks[0].Outputs[?OutputKey=='ECNotebooks::S3BucketName'].OutputValue" --output text)
+bucket=$(aws cloudformation describe-stacks --stack-name e-c-notebooks-infrastructure --query \
+"Stacks[0].Outputs[?ExportName=='ECNotebooks::S3BucketName'].OutputValue" --output text)
 
 echo "...job is running at:"
 echo "ssh -i instance_key.pem ec2-user@${public_ip}"

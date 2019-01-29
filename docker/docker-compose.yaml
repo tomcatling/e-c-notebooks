@@ -4,10 +4,11 @@ jupyterlab:
     - "8888:8888"
   volumes:
     - ../notebooks:/home/jovyan/notebooks/
+    - ../outputs:/home/jovyan/outputs/
     - $HOME/.aws/:/home/jovyan/.aws/
   environment:
     - JUPYTER_ENABLE_LAB=yes
     - GRANT_SUDO=yes
   user: root
   stdin_open: true
-  entrypoint: jupyter lab --ip='0.0.0.0' --notebook-dir=/home/jovyan/notebooks --config=/home/jovyan/.jupyter/jupyter_notebook_config.py --allow-root
+  entrypoint: jupyter lab --ip='0.0.0.0' --notebook-dir=/home/jovyan/ --config=/home/jovyan/.jupyter/jupyter_notebook_config.py --allow-root
