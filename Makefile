@@ -4,8 +4,8 @@ push:
 	git push origin
 	git push codecommit
 
-outputs:
-	echo "not configured"
+sync_outputs:
+	sh scripts/sync_outputs.sh
 
 infrastructure:
 	sh scripts/create_infrastructure.sh

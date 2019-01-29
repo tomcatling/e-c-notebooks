@@ -20,7 +20,23 @@ echo "c.NotebookApp.allow_origin = '*'" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.open_browser = False" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.port = 8888" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.allow_root = True" >> docker/jupyter_notebook_config.py
+echo "def scrub_output_pre_save(model, **kwargs):
+    '''scrub output before saving notebooks'''
+    # only run on notebooks
+    if model['type'] != 'notebook':
+        return
+    # only run on nbformat v4
+    if model['content']['nbformat'] != 4:
+        return
 
+    for cell in model['content']['cells']:
+        if cell['cell_type'] != 'code':
+            continue
+        cell['outputs'] = []
+        cell['execution_count'] = None
+        if 'collapsed' in cell['metadata']:
+            cell['metadata'].pop('collapsed', 0)" >> docker/jupyter_notebook_config.py
+echo "c.FileContentsManager.pre_save_hook = scrub_output_pre_save" >> docker/jupyter_notebook_config.py
 
 echo "Creating a private key for SSH."
 
