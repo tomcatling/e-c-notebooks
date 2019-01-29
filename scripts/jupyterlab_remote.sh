@@ -13,14 +13,8 @@ echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name e-c-notebooks-jupyterlab
 
 
-if [ -z $AWS_PROFILE ]; then 
-	public_ip=$(aws cloudformation describe-stacks --stack-name jupyterlab --query \
+public_ip=$(aws cloudformation describe-stacks --stack-name jupyterlab --query \
 "Stacks[0].Outputs[?ExportName=='ECNotebooks::ServerPublicIp'].OutputValue" --output text)
-else 
-	public_ip=$(AWS_PROFILE=$AWS_PROFILE aws cloudformation describe-stacks --stack-name jupyterlab --query \
-"Stacks[0].Outputs[?ExportName=='ECNotebooks::ServerPublicIp'].OutputValue" --output text)
-fi
-
 
 
 echo "...server is running at: ${public_ip}:8888"

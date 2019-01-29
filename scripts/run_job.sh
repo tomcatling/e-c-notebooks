@@ -44,20 +44,11 @@ ParameterKey=NotebookJobPath,ParameterValue=$(echo ${IPYNB_FILE} | sed 's/ /#SPA
 echo "Waiting for stack creation to finish..."
 aws cloudformation wait stack-create-complete --stack-name $stackname
 
-
-if [ -z $AWS_PROFILE ]; then 
-	public_ip=$(aws cloudformation describe-stacks --stack-name $stackname --query \
+public_ip=$(aws cloudformation describe-stacks --stack-name $stackname --query \
 "Stacks[0].Outputs[?ExportName=='ECNotebooks::$stackname::JobPublicIp'].OutputValue" --output text)
 
-	bucket=$(aws cloudformation describe-stacks --stack-name $stackname --query \
+bucket=$(aws cloudformation describe-stacks --stack-name $stackname --query \
 "Stacks[0].Outputs[?OutputKey=='ECNotebooks::S3BucketName'].OutputValue" --output text)
-else 
-	public_ip=$(AWS_PROFILE=$AWS_PROFILE aws cloudformation describe-stacks --stack-name $stackname --query \
-"Stacks[0].Outputs[?ExportName=='ECNotebooks::$stackname::JobPublicIp'].OutputValue" --output text)
-
-	bucket=$(AWS_PROFILE=$AWS_PROFILE aws cloudformation describe-stacks --stack-name $stackname --query \
-"Stacks[0].Outputs[?OutputKey=='ECNotebooks::S3BucketName'].OutputValue" --output text)
-fi
 
 echo "...job is running at:"
 echo "ssh -i instance_key.pem ec2-user@${public_ip}"

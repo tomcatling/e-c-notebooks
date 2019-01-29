@@ -24,7 +24,7 @@ echo "c.NotebookApp.allow_root = True" >> docker/jupyter_notebook_config.py
 
 echo "Creating a private key for SSH."
 
-if [ ! -f ./instance_key.pem ]; then
+if [ ! -f instance_key.pem ]; then
 	echo "Creating ssh key..."
 	aws ec2 delete-key-pair --key-name e-c-notebooks
 	sleep 2
@@ -33,14 +33,9 @@ if [ ! -f ./instance_key.pem ]; then
 	chmod 400 instance_key.pem
 fi
 
+cc_addr=$(aws cloudformation describe-stacks --stack-name e-c-notebooks-infrastructure --query \
+"Stacks[0].Outputs[?ExportName=='ECNotebooks::CodeCommitAddress'].OutputValue" --output text)
 
-if [ -z $AWS_PROFILE ]; then 
-	cc_addr=$(aws cloudformation describe-stacks --stack-name e-c-notebooks-infrastructure --query \
-"Stacks[0].Outputs[?ExportName=='ECNotebooks::CodeCommitAddress'].OutputValue" --output text)
-else 
-	cc_addr=$(AWS_PROFILE=$AWS_PROFILE aws cloudformation describe-stacks --stack-name e-c-notebooks-infrastructure --query \
-"Stacks[0].Outputs[?ExportName=='ECNotebooks::CodeCommitAddress'].OutputValue" --output text)
-fi
 
 echo "Adding 'codecommit' as a remote for git..."
 echo "git remote add codecommit ${cc_addr}"
