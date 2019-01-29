@@ -2,7 +2,7 @@ push:
 	git add .
 	git commit -m "$(msg)"
 	git push origin
-	git push --quiet codecommit
+	git push codecommit
 
 sync_outputs:
 	sh scripts/sync_outputs.sh
