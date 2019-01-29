@@ -111,11 +111,11 @@ Resources:
             - |
               #!/bin/bash
               set -e
-              function cleanup {
-                aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}
-              }
-              trap cleanup EXIT
-              echo "aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}" | at now +${Timeout} minutes 
+              echo "aws cloudformation delete-stack --region ${AWS::Region} --stack-name ${AWS::StackName}" > delete_stack.sh
+              mv delete_stack.sh /usr/local/bin/delete_stack
+              chmod +x /usr/local/bin/delete_stack
+              trap delete_stack EXIT
+              echo "delete_stack" | at now +${Timeout} minutes 
               yum update -y
               amazon-linux-extras install docker
               usermod -a -G docker ec2-user
