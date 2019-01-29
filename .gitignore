@@ -1,4 +1,4 @@
 ./notebooks/.*
-./outputs/**
+./outputs/*
 **/.ipynb_checkpoints/**
 instance_key.pem
