@@ -1,6 +1,6 @@
 push:
 	git add .
-	git commit -m 'automated push'
+	git commit -m $(msg)
 	git push origin
 	git push codecommit
 
@@ -16,5 +16,5 @@ server:
 local_server:
 	sh scripts/jupyterlab_local.sh
 
-job_stack:
+job:
 	sh scripts/run_job.sh $(nbpath)

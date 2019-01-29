@@ -52,4 +52,4 @@ bucket=$(aws cloudformation describe-stacks --stack-name $stackname --query \
 
 echo "...job is running at:"
 echo "ssh -i instance_key.pem ec2-user@${public_ip}"
-echo "Output will be placed in S3://$bucket/$IPYNB_FILE/$stackname.ipynb"
+echo "Output will be placed in S3:/$bucket/$IPYNB_FILE/$stackname.ipynb"
