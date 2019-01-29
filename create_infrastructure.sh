@@ -14,7 +14,7 @@ aws cloudformation wait stack-create-complete --stack-name e-c-notebooks-infrast
 echo "Configuring notebook server. Please enter a password:"
 
 hash=$(python -c "from notebook.auth import passwd;p=passwd();print(p)")
-echo "c.NotebookApp.password = $hash" > docker/jupyter_notebook_config.py
+echo "c.NotebookApp.password = '$hash'" > docker/jupyter_notebook_config.py
 echo "c.NotebookApp.password_required = True" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.allow_origin = '*'" >> docker/jupyter_notebook_config.py
 echo "c.NotebookApp.open_browser = False" >> docker/jupyter_notebook_config.py
