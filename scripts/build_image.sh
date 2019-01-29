@@ -18,3 +18,6 @@ public_ip=$(aws cloudformation describe-stacks --stack-name e-c-notebooks-builde
 
 echo "Connect to instance using:"
 echo "ssh -i instance_key.pem ec2-user@${public_ip}"
+echo " "
+echo "Waiting for build to finish..."
+aws cloudformation wait stack-delete-complete --stack-name e-c-notebooks-builder
